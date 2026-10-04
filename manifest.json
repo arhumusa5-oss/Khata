@@ -1,15 +1,21 @@
 {
-  "name": " ",
+  "name": "​",
   "short_name": "Khaata",
   "description": "Monthly Income, Spending, and Account Balance Tracker with Easypaisa Support",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["fullscreen", "standalone"],
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
   "orientation": "portrait",
   "background_color": "#000000",
   "theme_color": "#000000",
-  "categories": ["finance", "productivity"],
+  "categories": [
+    "finance",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "./icons/icon-192.png",
