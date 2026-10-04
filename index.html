@@ -148,7 +148,12 @@
           <i data-lucide="landmark" class="w-4 h-4 text-neutral-300"></i>
           Live Account Balance
         </span>
-        <span class="text-[10px] bg-neutral-800 text-neutral-300 border border-neutral-700 px-2 py-0.5 rounded-md font-mono">Easypaisa</span>
+        <div class="flex items-center gap-2">
+          <button type="button" id="toggleBalanceVisibilityBtn" title="Hide/Show Balance" class="p-1 px-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition flex items-center justify-center">
+            <i id="balanceEyeIcon" data-lucide="eye-off" class="w-3.5 h-3.5"></i>
+          </button>
+          <span class="text-[10px] bg-neutral-800 text-neutral-300 border border-neutral-700 px-2 py-0.5 rounded-md font-mono">Easypaisa</span>
+        </div>
       </div>
       <div class="text-3xl font-black tracking-tight text-white mt-1" id="statLiveBalance">Rs. 0</div>
       
@@ -615,6 +620,27 @@
       return `Rs. ${formatted}`;
     }
 
+    // Privacy Masking (By default: Hidden with eye-off / slash icon)
+    let isBalanceHidden = true;
+
+    function getMaskedDigits(val) {
+      const num = Math.round(Math.abs(Number(val) || 0));
+      const str = num.toString();
+      const len = Math.max(1, str.length);
+      return "*".repeat(len);
+    }
+
+    function formatDisplayAmount(val, showSign = false) {
+      const num = Number(val) || 0;
+      if (isBalanceHidden) {
+        const stars = getMaskedDigits(num);
+        if (showSign && num > 0) return `+Rs. ${stars}`;
+        if (showSign && num < 0) return `-Rs. ${stars}`;
+        return `Rs. ${stars}`;
+      }
+      return formatPKR(val, showSign);
+    }
+
     function formatMonthHeading(mKey) {
       const [y, m] = mKey.split("-");
       const d = new Date(Number(y), Number(m) - 1, 1);
@@ -667,13 +693,13 @@
       const liveBal = meta.starting_balance + totalInc - totalExp + totalAdj;
 
       // Update Cards: Green for +, Red for -
-      document.getElementById("statStartBalance").textContent = formatPKR(meta.starting_balance);
-      document.getElementById("statLiveBalance").textContent = formatPKR(liveBal);
-      document.getElementById("statTotalIncome").textContent = formatPKR(totalInc, true);
+      document.getElementById("statStartBalance").textContent = formatDisplayAmount(meta.starting_balance);
+      document.getElementById("statLiveBalance").textContent = formatDisplayAmount(liveBal);
+      document.getElementById("statTotalIncome").textContent = formatDisplayAmount(totalInc, true);
       document.getElementById("statTotalExpense").textContent = formatPKR(-totalExp, true);
       
       const savedElem = document.getElementById("statSavedThisMonth");
-      savedElem.textContent = formatPKR(saved, true);
+      savedElem.textContent = formatDisplayAmount(saved, true);
       if (saved > 0) {
         savedElem.className = "text-sm font-extrabold text-emerald-400 mt-1 truncate";
       } else if (saved < 0) {
@@ -1103,6 +1129,28 @@
           }
         }
       });
+
+      // Balance Visibility Toggle (Eye button with slash / eye-off)
+      const eyeBtn = document.getElementById("toggleBalanceVisibilityBtn");
+      if (eyeBtn) {
+        eyeBtn.addEventListener("click", () => {
+          isBalanceHidden = !isBalanceHidden;
+          updateEyeIcon();
+          render();
+        });
+      }
+
+      function updateEyeIcon() {
+        const eyeIcon = document.getElementById("balanceEyeIcon");
+        if (eyeIcon) {
+          if (isBalanceHidden) {
+            eyeIcon.setAttribute("data-lucide", "eye-off");
+          } else {
+            eyeIcon.setAttribute("data-lucide", "eye");
+          }
+          lucide.createIcons();
+        }
+      }
 
       // Initialize PIN Lock on App Launch
       initPinState();
