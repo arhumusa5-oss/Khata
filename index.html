@@ -44,15 +44,57 @@
 </head>
 <body class="min-h-full bg-black text-white flex flex-col antialiased safe-top">
 
+  <!-- PIN Lock Screen Overlay (Matte Black) -->
+  <div id="pinLockScreen" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-between p-6 safe-top safe-bottom select-none">
+    
+    <!-- Top Brand & Prompt -->
+    <div class="w-full flex flex-col items-center pt-8 space-y-3">
+      <img src="./icons/icon-192.png" alt="Logo" class="w-20 h-20 rounded-2xl shadow-2xl border border-neutral-800 object-contain">
+      <h2 class="text-xl font-extrabold text-white tracking-tight">Khaata Secured</h2>
+      <p id="pinPromptText" class="text-xs text-neutral-400">Apna 4-Digit PIN daalein (Default: 1234)</p>
+      
+      <!-- 4 Dots Indicators -->
+      <div id="pinDotsContainer" class="flex items-center gap-4 pt-3">
+        <span class="pin-dot w-4 h-4 rounded-full border-2 border-neutral-700 transition-all duration-150"></span>
+        <span class="pin-dot w-4 h-4 rounded-full border-2 border-neutral-700 transition-all duration-150"></span>
+        <span class="pin-dot w-4 h-4 rounded-full border-2 border-neutral-700 transition-all duration-150"></span>
+        <span class="pin-dot w-4 h-4 rounded-full border-2 border-neutral-700 transition-all duration-150"></span>
+      </div>
+
+      <!-- Error message container -->
+      <p id="pinErrorMsg" class="text-xs font-bold text-rose-500 h-4 transition-all opacity-0">Ghalat PIN! Login nahi ho sakta</p>
+    </div>
+
+    <!-- Numeric Keypad (3x4) -->
+    <div class="w-full max-w-[280px] grid grid-cols-3 gap-y-4 gap-x-5 pb-8">
+      <button type="button" onclick="handlePinKey('1')" class="keypad-btn w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 text-white font-bold text-xl active:bg-neutral-800 active:scale-95 transition flex items-center justify-center mx-auto">1</button>
+      <button type="button" onclick="handlePinKey('2')" class="keypad-btn w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 text-white font-bold text-xl active:bg-neutral-800 active:scale-95 transition flex items-center justify-center mx-auto">2</button>
+      <button type="button" onclick="handlePinKey('3')" class="keypad-btn w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 text-white font-bold text-xl active:bg-neutral-800 active:scale-95 transition flex items-center justify-center mx-auto">3</button>
+
+      <button type="button" onclick="handlePinKey('4')" class="keypad-btn w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 text-white font-bold text-xl active:bg-neutral-800 active:scale-95 transition flex items-center justify-center mx-auto">4</button>
+      <button type="button" onclick="handlePinKey('5')" class="keypad-btn w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 text-white font-bold text-xl active:bg-neutral-800 active:scale-95 transition flex items-center justify-center mx-auto">5</button>
+      <button type="button" onclick="handlePinKey('6')" class="keypad-btn w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 text-white font-bold text-xl active:bg-neutral-800 active:scale-95 transition flex items-center justify-center mx-auto">6</button>
+
+      <button type="button" onclick="handlePinKey('7')" class="keypad-btn w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 text-white font-bold text-xl active:bg-neutral-800 active:scale-95 transition flex items-center justify-center mx-auto">7</button>
+      <button type="button" onclick="handlePinKey('8')" class="keypad-btn w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 text-white font-bold text-xl active:bg-neutral-800 active:scale-95 transition flex items-center justify-center mx-auto">8</button>
+      <button type="button" onclick="handlePinKey('9')" class="keypad-btn w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 text-white font-bold text-xl active:bg-neutral-800 active:scale-95 transition flex items-center justify-center mx-auto">9</button>
+
+      <div class="w-16 h-16"></div>
+      <button type="button" onclick="handlePinKey('0')" class="keypad-btn w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 text-white font-bold text-xl active:bg-neutral-800 active:scale-95 transition flex items-center justify-center mx-auto">0</button>
+      <button type="button" onclick="handlePinBackspace()" class="keypad-btn w-16 h-16 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 font-bold text-base active:bg-neutral-800 active:scale-95 transition flex items-center justify-center mx-auto">
+        <i data-lucide="delete" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+  </div>
+
   <!-- Top App Bar (Matte Black) -->
   <header class="border-b border-neutral-800/90 bg-neutral-950/95 backdrop-blur-md sticky top-0 z-30 px-4 py-3">
     <div class="max-w-md mx-auto flex items-center justify-between gap-2">
       
       <!-- Brand Logo & Title -->
       <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-white text-black flex items-center justify-center shadow-md">
-          <i data-lucide="wallet" class="w-4 h-4 text-black stroke-[2.5]"></i>
-        </div>
+        <img src="./icons/icon-192.png" alt="Logo" class="w-9 h-9 rounded-xl shadow-md border border-neutral-800 object-contain">
         <div>
           <h1 class="text-base font-extrabold tracking-tight text-white flex items-center gap-1.5 leading-none">
             Khaata
@@ -376,6 +418,11 @@
           <input type="file" id="importJsonInput" accept=".json" class="sr-only">
           <i data-lucide="chevron-right" class="w-4 h-4 text-neutral-500"></i>
         </label>
+
+        <button id="changePinBtn" class="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-bold text-neutral-200 border border-neutral-800 flex items-center justify-between">
+          <span class="flex items-center gap-2"><i data-lucide="lock" class="w-4 h-4 text-white"></i> Change PIN Code</span>
+          <span class="text-[10px] text-neutral-400 font-mono">4-Digits</span>
+        </button>
       </div>
 
       <div class="pt-2 border-t border-neutral-800 text-[11px] text-neutral-500 text-center font-mono">
@@ -399,6 +446,69 @@
           reg.update();
         }).catch(err => console.log('SW reg fail:', err));
       });
+    }
+
+    // PIN Lock Management
+    const PIN_STORAGE_KEY = 'khaata_pin_code';
+    let currentPinInput = "";
+
+    function getStoredPin() {
+      return localStorage.getItem(PIN_STORAGE_KEY) || "1234";
+    }
+
+    function updatePinDots() {
+      const dots = document.querySelectorAll(".pin-dot");
+      dots.forEach((dot, idx) => {
+        if (idx < currentPinInput.length) {
+          dot.className = "pin-dot w-4 h-4 rounded-full bg-white border-2 border-white scale-110 transition-all duration-150";
+        } else {
+          dot.className = "pin-dot w-4 h-4 rounded-full bg-transparent border-2 border-neutral-700 transition-all duration-150";
+        }
+      });
+    }
+
+    window.handlePinKey = function(digit) {
+      if (currentPinInput.length >= 4) return;
+      currentPinInput += digit;
+      updatePinDots();
+      document.getElementById("pinErrorMsg").classList.add("opacity-0");
+
+      if (currentPinInput.length === 4) {
+        setTimeout(validateEnteredPin, 100);
+      }
+    };
+
+    window.handlePinBackspace = function() {
+      if (currentPinInput.length > 0) {
+        currentPinInput = currentPinInput.slice(0, -1);
+        updatePinDots();
+        document.getElementById("pinErrorMsg").classList.add("opacity-0");
+      }
+    };
+
+    function validateEnteredPin() {
+      const correctPin = getStoredPin();
+      if (currentPinInput === correctPin) {
+        const dots = document.querySelectorAll(".pin-dot");
+        dots.forEach(d => d.className = "pin-dot w-4 h-4 rounded-full bg-emerald-500 border-2 border-emerald-500 scale-125 transition-all");
+        setTimeout(() => {
+          const lockScreen = document.getElementById("pinLockScreen");
+          lockScreen.classList.add("opacity-0", "pointer-events-none", "transition-opacity", "duration-300");
+          setTimeout(() => lockScreen.classList.add("hidden"), 300);
+          currentPinInput = "";
+          updatePinDots();
+        }, 180);
+      } else {
+        const dots = document.querySelectorAll(".pin-dot");
+        dots.forEach(d => d.className = "pin-dot w-4 h-4 rounded-full bg-rose-500 border-2 border-rose-500 transition-all");
+        const errMsg = document.getElementById("pinErrorMsg");
+        errMsg.classList.remove("opacity-0");
+
+        setTimeout(() => {
+          currentPinInput = "";
+          updatePinDots();
+        }, 600);
+      }
     }
 
     // Storage Keys
@@ -890,6 +1000,23 @@
           }
         };
         reader.readAsText(file);
+      // Change PIN Listener
+      document.getElementById("changePinBtn").addEventListener("click", () => {
+        const curPin = getStoredPin();
+        const oldAttempt = prompt("Pehlay mojooda PIN daalein:");
+        if (oldAttempt === null) return;
+        if (oldAttempt !== curPin) {
+          alert("Ghalat mojooda PIN!");
+          return;
+        }
+        const newPin = prompt("Naya 4-Digit PIN daalein (numbers only):");
+        if (!newPin || newPin.trim().length !== 4 || isNaN(newPin.trim())) {
+          alert("PIN lazmi 4 digits ka hona chahiye!");
+          return;
+        }
+        localStorage.setItem(PIN_STORAGE_KEY, newPin.trim());
+        showToast("Naya PIN set ho gaya!");
+        setModal.classList.add("hidden");
       });
 
     });
