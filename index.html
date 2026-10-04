@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<html lang="en" class="h-full bg-black text-white">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0f172a">
+  <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Khaata - Mobile Finance Tracker</title>
@@ -16,10 +16,12 @@
   <script src="./lucide.min.js"></script>
 
   <style>
-    /* Mobile App Tweaks */
+    /* Mobile App Tweaks - Matte Black & White */
     body {
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      background-color: #000000;
+      color: #ffffff;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     }
     input, select, textarea {
@@ -35,40 +37,40 @@
       transition: opacity 0.2s ease-in-out;
     }
     .tab-btn.active {
-      background-color: #059669 !important;
-      color: #ffffff !important;
+      background-color: #ffffff !important;
+      color: #000000 !important;
     }
   </style>
 </head>
-<body class="min-h-full bg-slate-950 text-slate-100 flex flex-col antialiased safe-top">
+<body class="min-h-full bg-black text-white flex flex-col antialiased safe-top">
 
-  <!-- Top App Bar -->
-  <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30 px-4 py-3">
+  <!-- Top App Bar (Matte Black) -->
+  <header class="border-b border-neutral-800/90 bg-neutral-950/95 backdrop-blur-md sticky top-0 z-30 px-4 py-3">
     <div class="max-w-md mx-auto flex items-center justify-between gap-2">
       
-      <!-- Brand -->
+      <!-- Brand Logo & Title -->
       <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-md shadow-emerald-500/20">
-          <i data-lucide="wallet" class="w-4 h-4 text-white"></i>
+        <div class="w-9 h-9 rounded-xl bg-white text-black flex items-center justify-center shadow-md">
+          <i data-lucide="wallet" class="w-4 h-4 text-black stroke-[2.5]"></i>
         </div>
         <div>
-          <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-1.5 leading-none">
+          <h1 class="text-base font-extrabold tracking-tight text-white flex items-center gap-1.5 leading-none">
             Khaata
-            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Mobile</span>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700">OS</span>
           </h1>
-          <p class="text-[10px] text-slate-400 mt-0.5">Easypaisa & Finance OS</p>
+          <p class="text-[10px] text-neutral-400 mt-0.5">Easypaisa & Finance</p>
         </div>
       </div>
 
-      <!-- Quick Actions -->
+      <!-- Quick Actions (Monochrome Matte) -->
       <div class="flex items-center gap-1.5">
-        <button id="reconcileHeaderBtn" title="Check Balance" class="p-2 rounded-xl bg-slate-800 text-indigo-300 border border-slate-700/80 active:scale-95 transition">
+        <button id="reconcileHeaderBtn" title="Check Balance" class="p-2 rounded-xl bg-neutral-900 text-neutral-300 border border-neutral-800 hover:text-white hover:border-neutral-700 active:scale-95 transition">
           <i data-lucide="scale" class="w-4 h-4"></i>
         </button>
-        <button id="rolloverHeaderBtn" title="Month End Rollover" class="p-2 rounded-xl bg-slate-800 text-amber-300 border border-slate-700/80 active:scale-95 transition">
+        <button id="rolloverHeaderBtn" title="Month End Rollover" class="p-2 rounded-xl bg-neutral-900 text-neutral-300 border border-neutral-800 hover:text-white hover:border-neutral-700 active:scale-95 transition">
           <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
         </button>
-        <button id="backupModalBtn" title="Backup / Export" class="p-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700/80 active:scale-95 transition">
+        <button id="backupModalBtn" title="Backup / Export" class="p-2 rounded-xl bg-neutral-900 text-neutral-300 border border-neutral-800 hover:text-white hover:border-neutral-700 active:scale-95 transition">
           <i data-lucide="settings" class="w-4 h-4"></i>
         </button>
       </div>
@@ -76,91 +78,91 @@
     </div>
   </header>
 
-  <!-- Month Bar -->
-  <div class="bg-slate-900/60 border-b border-slate-800/80 px-4 py-2">
+  <!-- Month Bar (Matte Black) -->
+  <div class="bg-neutral-950 border-b border-neutral-900 px-4 py-2">
     <div class="max-w-md mx-auto flex items-center justify-between">
-      <button id="prevMonthBtn" class="p-1.5 rounded-lg bg-slate-800 text-slate-300 active:scale-90 transition">
+      <button id="prevMonthBtn" class="p-1.5 rounded-lg bg-neutral-900 text-neutral-300 border border-neutral-800 active:scale-90 transition">
         <i data-lucide="chevron-left" class="w-4 h-4"></i>
       </button>
 
       <div class="flex items-center gap-2">
-        <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i>
-        <span id="currentMonthDisplay" class="font-bold text-sm text-white">October 2026</span>
+        <i data-lucide="calendar" class="w-3.5 h-3.5 text-neutral-400"></i>
+        <span id="currentMonthDisplay" class="font-bold text-sm text-white tracking-wide">October 2026</span>
       </div>
 
-      <button id="nextMonthBtn" class="p-1.5 rounded-lg bg-slate-800 text-slate-300 active:scale-90 transition">
+      <button id="nextMonthBtn" class="p-1.5 rounded-lg bg-neutral-900 text-neutral-300 border border-neutral-800 active:scale-90 transition">
         <i data-lucide="chevron-right" class="w-4 h-4"></i>
       </button>
     </div>
   </div>
 
   <!-- Main Scrollable Content -->
-  <main class="flex-1 max-w-md w-full mx-auto p-4 space-y-4 pb-24">
+  <main class="flex-1 max-w-md w-full mx-auto p-4 space-y-4 pb-28">
     
-    <!-- Hero Card: Live Account Balance -->
-    <div class="bg-gradient-to-br from-slate-900 via-slate-850 to-emerald-950/60 border border-emerald-500/40 rounded-2xl p-5 shadow-xl relative overflow-hidden">
-      <div class="flex items-center justify-between text-xs text-emerald-300 mb-1">
-        <span class="flex items-center gap-1.5 font-medium">
-          <i data-lucide="landmark" class="w-4 h-4"></i>
+    <!-- Hero Card: Live Account Balance (Matte Black with Crisp White) -->
+    <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-5 shadow-2xl relative overflow-hidden">
+      <div class="flex items-center justify-between text-xs text-neutral-400 mb-1">
+        <span class="flex items-center gap-1.5 font-medium tracking-wide">
+          <i data-lucide="landmark" class="w-4 h-4 text-neutral-300"></i>
           Live Account Balance
         </span>
-        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-md font-mono">Easypaisa</span>
+        <span class="text-[10px] bg-neutral-800 text-neutral-300 border border-neutral-700 px-2 py-0.5 rounded-md font-mono">Easypaisa</span>
       </div>
       <div class="text-3xl font-black tracking-tight text-white mt-1" id="statLiveBalance">Rs. 0</div>
       
-      <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-800/80 text-[11px] text-slate-400">
+      <div class="flex items-center justify-between mt-3 pt-3 border-t border-neutral-800 text-[11px] text-neutral-400">
         <span class="flex items-center gap-1">
           Starting: <strong class="text-white" id="statStartBalance">Rs. 0</strong>
         </span>
-        <button id="editStartBalanceBtn" class="text-blue-400 font-medium hover:underline flex items-center gap-1">
+        <button id="editStartBalanceBtn" class="text-neutral-300 hover:text-white font-medium hover:underline flex items-center gap-1">
           <i data-lucide="pencil" class="w-3 h-3"></i> Edit
         </button>
       </div>
     </div>
 
-    <!-- Monthly Summary 3-Grid -->
+    <!-- Monthly Summary 3-Grid (Green for +, Red for -) -->
     <div class="grid grid-cols-3 gap-2">
       
-      <!-- Total Income -->
-      <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-3 text-center">
-        <div class="text-[10px] text-emerald-400 font-semibold uppercase flex items-center justify-center gap-1">
-          <i data-lucide="arrow-down-left" class="w-3 h-3"></i> Income
+      <!-- Total Income (+) GREEN -->
+      <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 text-center">
+        <div class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider flex items-center justify-center gap-1">
+          <i data-lucide="arrow-down-left" class="w-3 h-3 text-emerald-400 stroke-[2.5]"></i> Income (+)
         </div>
-        <div class="text-sm font-bold text-emerald-400 mt-1 truncate" id="statTotalIncome">+Rs. 0</div>
+        <div class="text-sm font-extrabold text-emerald-400 mt-1 truncate" id="statTotalIncome">+Rs. 0</div>
       </div>
 
-      <!-- Total Spent -->
-      <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-3 text-center">
-        <div class="text-[10px] text-rose-400 font-semibold uppercase flex items-center justify-center gap-1">
-          <i data-lucide="arrow-up-right" class="w-3 h-3"></i> Kharcha
+      <!-- Total Spent (-) RED -->
+      <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 text-center">
+        <div class="text-[10px] text-rose-500 font-bold uppercase tracking-wider flex items-center justify-center gap-1">
+          <i data-lucide="arrow-up-right" class="w-3 h-3 text-rose-500 stroke-[2.5]"></i> Kharcha (-)
         </div>
-        <div class="text-sm font-bold text-rose-400 mt-1 truncate" id="statTotalExpense">-Rs. 0</div>
+        <div class="text-sm font-extrabold text-rose-500 mt-1 truncate" id="statTotalExpense">-Rs. 0</div>
       </div>
 
       <!-- Saved / Bache -->
-      <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-3 text-center">
-        <div class="text-[10px] text-cyan-400 font-semibold uppercase flex items-center justify-center gap-1">
-          <i data-lucide="piggy-bank" class="w-3 h-3"></i> Bachat
+      <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 text-center">
+        <div class="text-[10px] text-neutral-300 font-bold uppercase tracking-wider flex items-center justify-center gap-1">
+          <i data-lucide="piggy-bank" class="w-3 h-3 text-neutral-400"></i> Bachat
         </div>
-        <div class="text-sm font-bold text-cyan-400 mt-1 truncate" id="statSavedThisMonth">Rs. 0</div>
+        <div class="text-sm font-extrabold text-white mt-1 truncate" id="statSavedThisMonth">Rs. 0</div>
       </div>
 
     </div>
 
-    <!-- Filter & Search Bar -->
-    <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-3 space-y-3">
+    <!-- Filter & Search Bar (Matte Black & White) -->
+    <div class="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-3 space-y-3">
       
       <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 flex-1">
-          <button id="filterAllBtn" class="tab-btn active flex-1 py-1 text-[11px] font-bold rounded-lg text-white">Tamam</button>
-          <button id="filterIncomeBtn" class="tab-btn flex-1 py-1 text-[11px] font-bold rounded-lg text-slate-400">Income</button>
-          <button id="filterExpenseBtn" class="tab-btn flex-1 py-1 text-[11px] font-bold rounded-lg text-slate-400">Kharcha</button>
+        <div class="flex items-center gap-1 bg-black p-1 rounded-xl border border-neutral-800 flex-1">
+          <button id="filterAllBtn" class="tab-btn active flex-1 py-1.5 text-[11px] font-extrabold rounded-lg text-black transition">Tamam</button>
+          <button id="filterIncomeBtn" class="tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-emerald-400 hover:text-emerald-300 transition">+ Income</button>
+          <button id="filterExpenseBtn" class="tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-rose-500 hover:text-rose-400 transition">- Kharcha</button>
         </div>
       </div>
 
       <div class="relative">
-        <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
-        <input type="text" id="searchInput" placeholder="Search item ya category..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+        <i data-lucide="search" class="w-3.5 h-3.5 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+        <input type="text" id="searchInput" placeholder="Search item ya category..." class="w-full bg-black border border-neutral-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 transition">
       </div>
 
     </div>
@@ -172,52 +174,52 @@
 
     <!-- Empty State -->
     <div id="emptyState" class="hidden py-10 text-center">
-      <div class="w-12 h-12 rounded-2xl bg-slate-800/60 flex items-center justify-center text-slate-500 mx-auto mb-2">
+      <div class="w-12 h-12 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-600 mx-auto mb-2">
         <i data-lucide="receipt" class="w-5 h-5"></i>
       </div>
-      <p class="text-xs text-slate-400 font-medium">Koi entry nahi mili</p>
-      <p class="text-[11px] text-slate-500 mt-0.5">Neeche diye gaye "+" button se pehli entry daalein.</p>
+      <p class="text-xs text-neutral-400 font-medium">Koi entry nahi mili</p>
+      <p class="text-[11px] text-neutral-600 mt-0.5">Neeche diye gaye button se entry daalein.</p>
     </div>
 
   </main>
 
-  <!-- Bottom Floating Action Bar -->
-  <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent pointer-events-none safe-bottom z-20">
+  <!-- Bottom Floating Action Bar (Crisp White Button) -->
+  <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/95 to-transparent pointer-events-none safe-bottom z-20">
     <div class="max-w-md mx-auto flex items-center justify-center pointer-events-auto">
-      <button id="openAddModalBtn" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-sm shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-2 active:scale-95 transition">
-        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+      <button id="openAddModalBtn" class="w-full py-3.5 px-6 rounded-2xl bg-white hover:bg-neutral-200 text-black font-black text-sm shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition">
+        <i data-lucide="plus-circle" class="w-5 h-5 text-black stroke-[2.5]"></i>
         <span>+ Nayi Entry Daalein</span>
       </button>
     </div>
   </div>
 
-  <!-- ================= MODALS ================= -->
+  <!-- ================= MODALS (Matte Black Theme) ================= -->
 
   <!-- 1. Add Entry Modal -->
-  <div id="transactionModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+  <div id="transactionModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-neutral-950 border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
       
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-white"></span>
           Nayi Entry Daalein
         </h3>
-        <button id="closeModalBtn" class="p-1 rounded-lg text-slate-400 hover:text-white">
+        <button id="closeModalBtn" class="p-1 rounded-lg text-neutral-400 hover:text-white">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
       <form id="transactionForm" class="space-y-3.5">
         
-        <!-- Type Selector -->
-        <div class="grid grid-cols-2 gap-2 p-1 bg-slate-950 rounded-xl border border-slate-800">
-          <button type="button" id="typeExpenseBtn" class="py-2 text-xs font-bold rounded-lg text-white bg-rose-600 shadow-sm flex items-center justify-center gap-1.5">
-            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
-            Kharcha (Spent)
+        <!-- Type Selector: Red for Kharcha (-), Green for Income (+) -->
+        <div class="grid grid-cols-2 gap-2 p-1 bg-black rounded-xl border border-neutral-800">
+          <button type="button" id="typeExpenseBtn" class="py-2.5 text-xs font-extrabold rounded-lg text-white bg-rose-600 shadow-sm flex items-center justify-center gap-1.5 transition">
+            <i data-lucide="arrow-up-right" class="w-4 h-4 stroke-[2.5]"></i>
+            Kharcha (-)
           </button>
-          <button type="button" id="typeIncomeBtn" class="py-2 text-xs font-bold rounded-lg text-slate-400 flex items-center justify-center gap-1.5">
+          <button type="button" id="typeIncomeBtn" class="py-2.5 text-xs font-bold rounded-lg text-neutral-400 flex items-center justify-center gap-1.5 transition">
             <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
-            Income (Aaye)
+            Income (+)
           </button>
         </div>
         <input type="hidden" id="txType" value="expense">
@@ -225,26 +227,26 @@
         <!-- Date & Amount -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-[11px] font-medium text-slate-400 mb-1">Date</label>
-            <input type="date" id="txDate" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Date</label>
+            <input type="date" id="txDate" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
           </div>
           <div>
-            <label class="block text-[11px] font-medium text-slate-400 mb-1">Amount (PKR)</label>
-            <input type="number" id="txAmount" min="1" step="any" placeholder="2500" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold focus:outline-none focus:border-emerald-500">
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Amount (PKR)</label>
+            <input type="number" id="txAmount" min="1" step="any" placeholder="2500" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white font-bold focus:outline-none focus:border-white">
           </div>
         </div>
 
         <!-- Title -->
         <div>
-          <label class="block text-[11px] font-medium text-slate-400 mb-1">Title / Kis Cheez Par</label>
-          <input type="text" id="txTitle" placeholder="e.g. Rashan, Petrol, Salary" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+          <label class="block text-[11px] font-medium text-neutral-400 mb-1">Title / Kis Cheez Par</label>
+          <input type="text" id="txTitle" placeholder="e.g. Rashan, Petrol, Salary" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
           <div class="flex flex-wrap gap-1.5 mt-2" id="quickSuggestions"></div>
         </div>
 
         <!-- Category -->
         <div>
-          <label class="block text-[11px] font-medium text-slate-400 mb-1">Category</label>
-          <select id="txCategory" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+          <label class="block text-[11px] font-medium text-neutral-400 mb-1">Category</label>
+          <select id="txCategory" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
             <option value="Groceries / Food">Groceries / Food</option>
             <option value="Bills & Utilities">Bills & Utilities</option>
             <option value="Fuel / Transport">Fuel / Transport</option>
@@ -257,7 +259,7 @@
           </select>
         </div>
 
-        <button type="submit" class="w-full py-3 rounded-xl bg-emerald-600 font-bold text-xs text-white shadow-lg shadow-emerald-600/30 transition active:scale-95">
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-white text-black font-black text-xs shadow-xl active:scale-95 transition">
           Save Entry
         </button>
 
@@ -266,138 +268,138 @@
   </div>
 
   <!-- 2. Set Starting Balance Modal -->
-  <div id="startBalanceModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+  <div id="startBalanceModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-neutral-950 border border-neutral-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
         <h3 class="text-sm font-bold text-white flex items-center gap-2">
-          <i data-lucide="history" class="w-4 h-4 text-blue-400"></i>
+          <i data-lucide="history" class="w-4 h-4 text-neutral-400"></i>
           Starting Balance Set Karein
         </h3>
-        <button id="closeStartBalanceBtn" class="text-slate-400 hover:text-white p-1">
+        <button id="closeStartBalanceBtn" class="text-neutral-400 hover:text-white p-1">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <p class="text-xs text-slate-400 leading-relaxed">
+      <p class="text-xs text-neutral-400 leading-relaxed">
         Month ke shuru mein account mein kitne rupay thay? (Aapka example: <strong>70,000</strong>):
       </p>
 
       <div>
-        <input type="number" id="inputStartingBalance" step="any" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white font-bold focus:outline-none focus:border-blue-500">
+        <input type="number" id="inputStartingBalance" step="any" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2.5 text-sm text-white font-bold focus:outline-none focus:border-white">
       </div>
 
       <div class="flex justify-end gap-2 pt-2">
-        <button type="button" id="cancelStartBalanceBtn" class="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
-        <button type="button" id="saveStartBalanceBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white">Save</button>
+        <button type="button" id="cancelStartBalanceBtn" class="px-3 py-1.5 text-xs text-neutral-400">Cancel</button>
+        <button type="button" id="saveStartBalanceBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-black">Save</button>
       </div>
     </div>
   </div>
 
   <!-- 3. Reconcile Balance Modal -->
-  <div id="reconcileModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+  <div id="reconcileModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-neutral-950 border border-neutral-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
         <h3 class="text-sm font-bold text-white flex items-center gap-2">
-          <i data-lucide="scale" class="w-4 h-4 text-indigo-400"></i>
+          <i data-lucide="scale" class="w-4 h-4 text-neutral-400"></i>
           Easypaisa Balance Match
         </h3>
-        <button id="closeReconcileBtn" class="text-slate-400 hover:text-white p-1">
+        <button id="closeReconcileBtn" class="text-neutral-400 hover:text-white p-1">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs flex justify-between">
-        <span class="text-slate-400">App Calculated:</span>
+      <div class="p-3 bg-neutral-900 rounded-xl border border-neutral-800 text-xs flex justify-between">
+        <span class="text-neutral-400">App Calculated:</span>
         <span class="font-bold text-white" id="reconcileAppCalculated">Rs. 0</span>
       </div>
 
       <div>
-        <label class="block text-xs font-medium text-slate-300 mb-1">Easypaisa mein abhi kitne hain?</label>
-        <input type="number" id="inputActualBalance" step="any" placeholder="e.g. 69500" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white font-bold focus:outline-none focus:border-indigo-500">
+        <label class="block text-xs font-medium text-neutral-300 mb-1">Easypaisa mein abhi kitne hain?</label>
+        <input type="number" id="inputActualBalance" step="any" placeholder="e.g. 69500" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white font-bold focus:outline-none focus:border-white">
       </div>
 
       <div id="diffAlertBox" class="hidden p-2.5 rounded-xl border text-xs"></div>
 
       <div class="flex justify-end gap-2 pt-2">
-        <button type="button" id="cancelReconcileBtn" class="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
-        <button type="button" id="applyReconcileBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white">Auto-Match</button>
+        <button type="button" id="cancelReconcileBtn" class="px-3 py-1.5 text-xs text-neutral-400">Cancel</button>
+        <button type="button" id="applyReconcileBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-black">Auto-Match</button>
       </div>
     </div>
   </div>
 
   <!-- 4. Month End Rollover Modal -->
-  <div id="rolloverModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+  <div id="rolloverModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-neutral-950 border border-neutral-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
         <h3 class="text-sm font-bold text-white flex items-center gap-2">
-          <i data-lucide="arrow-right-circle" class="w-4 h-4 text-amber-400"></i>
+          <i data-lucide="arrow-right-circle" class="w-4 h-4 text-neutral-400"></i>
           Month End Rollover
         </h3>
-        <button id="closeRolloverBtn" class="text-slate-400 hover:text-white p-1">
+        <button id="closeRolloverBtn" class="text-neutral-400 hover:text-white p-1">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <p class="text-xs text-slate-400">
+      <p class="text-xs text-neutral-400">
         Is month ka aakhri balance aglay month ke <strong>Starting Balance</strong> mein transfer ho jayega:
       </p>
 
-      <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs flex justify-between">
-        <span class="text-slate-400">Closing Balance:</span>
-        <span class="font-bold text-emerald-400" id="rolloverCalculatedBalance">Rs. 0</span>
+      <div class="p-3 bg-neutral-900 rounded-xl border border-neutral-800 text-xs flex justify-between">
+        <span class="text-neutral-400">Closing Balance:</span>
+        <span class="font-bold text-white" id="rolloverCalculatedBalance">Rs. 0</span>
       </div>
 
       <div>
-        <label class="block text-xs font-medium text-slate-300 mb-1">Carry Forward Amount:</label>
-        <input type="number" id="inputCarryForwardAmount" step="any" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white font-bold focus:outline-none focus:border-amber-500">
+        <label class="block text-xs font-medium text-neutral-300 mb-1">Carry Forward Amount:</label>
+        <input type="number" id="inputCarryForwardAmount" step="any" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white font-bold focus:outline-none focus:border-white">
       </div>
 
       <div class="flex justify-end gap-2 pt-2">
-        <button type="button" id="cancelRolloverBtn" class="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
-        <button type="button" id="confirmRolloverBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-600 text-white">Start Next Month</button>
+        <button type="button" id="cancelRolloverBtn" class="px-3 py-1.5 text-xs text-neutral-400">Cancel</button>
+        <button type="button" id="confirmRolloverBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-black">Start Next Month</button>
       </div>
     </div>
   </div>
 
   <!-- 5. Settings & Backup Modal -->
-  <div id="settingsModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+  <div id="settingsModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-neutral-950 border border-neutral-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
         <h3 class="text-sm font-bold text-white flex items-center gap-2">
-          <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i>
+          <i data-lucide="settings" class="w-4 h-4 text-neutral-400"></i>
           Settings & Backup
         </h3>
-        <button id="closeSettingsBtn" class="text-slate-400 hover:text-white p-1">
+        <button id="closeSettingsBtn" class="text-neutral-400 hover:text-white p-1">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
 
       <div class="space-y-2">
-        <button id="exportCsvBtn" class="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700 flex items-center justify-between">
-          <span class="flex items-center gap-2"><i data-lucide="download" class="w-4 h-4 text-emerald-400"></i> Export to Excel (CSV)</span>
-          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+        <button id="exportCsvBtn" class="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-bold text-neutral-200 border border-neutral-800 flex items-center justify-between">
+          <span class="flex items-center gap-2"><i data-lucide="download" class="w-4 h-4 text-white"></i> Export to Excel (CSV)</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-neutral-500"></i>
         </button>
 
-        <button id="exportJsonBtn" class="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700 flex items-center justify-between">
-          <span class="flex items-center gap-2"><i data-lucide="database" class="w-4 h-4 text-blue-400"></i> Backup All Data (JSON)</span>
-          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+        <button id="exportJsonBtn" class="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-bold text-neutral-200 border border-neutral-800 flex items-center justify-between">
+          <span class="flex items-center gap-2"><i data-lucide="database" class="w-4 h-4 text-white"></i> Backup All Data (JSON)</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-neutral-500"></i>
         </button>
 
-        <label class="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700 flex items-center justify-between cursor-pointer">
-          <span class="flex items-center gap-2"><i data-lucide="upload" class="w-4 h-4 text-amber-400"></i> Restore Backup File</span>
+        <label class="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-bold text-neutral-200 border border-neutral-800 flex items-center justify-between cursor-pointer">
+          <span class="flex items-center gap-2"><i data-lucide="upload" class="w-4 h-4 text-white"></i> Restore Backup File</span>
           <input type="file" id="importJsonInput" accept=".json" class="sr-only">
-          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-neutral-500"></i>
         </label>
       </div>
 
-      <div class="pt-2 border-t border-slate-800 text-[11px] text-slate-500 text-center">
-        Khaata Mobile OS &bull; 100% Offline Storage
+      <div class="pt-2 border-t border-neutral-800 text-[11px] text-neutral-500 text-center font-mono">
+        Khaata OS &bull; Matte Black & White Edition
       </div>
     </div>
   </div>
 
   <!-- Notification Toast -->
-  <div id="toast" class="fixed top-5 left-4 right-4 z-50 transform -translate-y-24 opacity-0 transition-all duration-300 px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center justify-center gap-2 border bg-emerald-950/95 text-emerald-200 border-emerald-800">
+  <div id="toast" class="fixed top-5 left-4 right-4 z-50 transform -translate-y-24 opacity-0 transition-all duration-300 px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center justify-center gap-2 border bg-neutral-900 text-white border-neutral-700">
     <i id="toastIcon" data-lucide="check-circle" class="w-4 h-4"></i>
     <span id="toastMsg">Notification</span>
   </div>
@@ -458,9 +460,9 @@
       const t = document.getElementById("toast");
       document.getElementById("toastMsg").textContent = msg;
       if (isError) {
-        t.className = "fixed top-5 left-4 right-4 z-50 px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center justify-center gap-2 border bg-rose-950/95 text-rose-200 border-rose-800 transition-all duration-300 transform translate-y-0 opacity-100";
+        t.className = "fixed top-5 left-4 right-4 z-50 px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center justify-center gap-2 border bg-neutral-900 text-rose-400 border-rose-800 transition-all duration-300 transform translate-y-0 opacity-100";
       } else {
-        t.className = "fixed top-5 left-4 right-4 z-50 px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center justify-center gap-2 border bg-emerald-950/95 text-emerald-200 border-emerald-800 transition-all duration-300 transform translate-y-0 opacity-100";
+        t.className = "fixed top-5 left-4 right-4 z-50 px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center justify-center gap-2 border bg-neutral-900 text-white border-neutral-700 transition-all duration-300 transform translate-y-0 opacity-100";
       }
       setTimeout(() => {
         t.classList.remove("translate-y-0", "opacity-100");
@@ -475,7 +477,6 @@
       // Meta for month
       let meta = db.months[currentMonth];
       if (!meta) {
-        // Calculate starting balance from previous month if exists
         const [y, m] = currentMonth.split("-").map(Number);
         const prevM = m === 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, '0')}`;
         const prevMeta = db.months[prevM];
@@ -500,14 +501,23 @@
       const saved = totalInc - totalExp;
       const liveBal = meta.starting_balance + totalInc - totalExp + totalAdj;
 
-      // Update Cards
+      // Update Cards: Green for +, Red for -
       document.getElementById("statStartBalance").textContent = formatPKR(meta.starting_balance);
       document.getElementById("statLiveBalance").textContent = formatPKR(liveBal);
       document.getElementById("statTotalIncome").textContent = formatPKR(totalInc, true);
       document.getElementById("statTotalExpense").textContent = formatPKR(-totalExp, true);
-      document.getElementById("statSavedThisMonth").textContent = formatPKR(saved, true);
+      
+      const savedElem = document.getElementById("statSavedThisMonth");
+      savedElem.textContent = formatPKR(saved, true);
+      if (saved > 0) {
+        savedElem.className = "text-sm font-extrabold text-emerald-400 mt-1 truncate";
+      } else if (saved < 0) {
+        savedElem.className = "text-sm font-extrabold text-rose-500 mt-1 truncate";
+      } else {
+        savedElem.className = "text-sm font-extrabold text-white mt-1 truncate";
+      }
 
-      // Render Transaction List
+      // Render Transaction List (Matte Black items with Green (+) and Red (-))
       const search = document.getElementById("searchInput").value.toLowerCase();
       let filtered = monthTx.filter(t => {
         if (activeFilter === 'income' && t.type !== 'income') return false;
@@ -528,26 +538,40 @@
         emptyState.classList.add("hidden");
         let html = "";
         filtered.forEach(tx => {
-          let badgeColor = tx.type === 'income' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : (tx.type === 'expense' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20');
-          let amtColor = tx.type === 'income' ? 'text-emerald-400' : (tx.type === 'expense' ? 'text-rose-400' : 'text-indigo-400');
-          let sign = tx.type === 'income' ? '+' : (tx.type === 'expense' ? '-' : (tx.amount >= 0 ? '+' : ''));
+          let badgeColor = "";
+          let amtColor = "";
+          let sign = "";
+
+          if (tx.type === 'income') {
+            badgeColor = "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30";
+            amtColor = "text-emerald-400";
+            sign = "+";
+          } else if (tx.type === 'expense') {
+            badgeColor = "bg-rose-500/15 text-rose-400 border border-rose-500/30";
+            amtColor = "text-rose-500";
+            sign = "-";
+          } else {
+            badgeColor = "bg-neutral-800 text-neutral-300 border border-neutral-700";
+            amtColor = tx.amount >= 0 ? "text-emerald-400" : "text-rose-500";
+            sign = tx.amount >= 0 ? "+" : "";
+          }
 
           html += `
-            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-3 shadow-sm">
+            <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3.5 flex items-center justify-between gap-3 shadow-sm hover:border-neutral-700 transition">
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2">
                   <span class="font-bold text-xs text-white truncate">${escapeHtml(tx.title)}</span>
-                  <span class="text-[9px] px-1.5 py-0.5 rounded-full border ${badgeColor} font-bold uppercase">${tx.type}</span>
+                  <span class="text-[9px] px-1.5 py-0.5 rounded-full ${badgeColor} font-bold uppercase">${tx.type}</span>
                 </div>
-                <div class="flex items-center gap-2 mt-1 text-[10px] text-slate-500 font-mono">
+                <div class="flex items-center gap-2 mt-1 text-[10px] text-neutral-500 font-mono">
                   <span>${tx.date}</span>
                   <span>&bull;</span>
-                  <span class="text-slate-400">${escapeHtml(tx.category)}</span>
+                  <span class="text-neutral-400">${escapeHtml(tx.category)}</span>
                 </div>
               </div>
-              <div class="text-right flex-shrink-0 flex items-center gap-2">
-                <span class="text-sm font-bold font-mono ${amtColor}">${sign}${formatPKR(Math.abs(tx.amount))}</span>
-                <button onclick="deleteTx(${tx.id})" class="p-1 rounded-lg text-slate-600 hover:text-rose-400">
+              <div class="text-right flex-shrink-0 flex items-center gap-2.5">
+                <span class="text-sm font-extrabold font-mono ${amtColor}">${sign}${formatPKR(Math.abs(tx.amount))}</span>
+                <button onclick="deleteTx(${tx.id})" class="p-1 rounded-lg text-neutral-500 hover:text-rose-400 transition">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
@@ -593,7 +617,7 @@
       const c = document.getElementById("quickSuggestions");
       let h = "";
       (suggestions[type] || []).forEach(s => {
-        h += `<button type="button" onclick="selectSug('${s.title}', '${s.cat}')" class="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">${s.title}</button>`;
+        h += `<button type="button" onclick="selectSug('${s.title}', '${s.cat}')" class="text-[10px] px-2 py-0.5 rounded-md bg-neutral-900 text-neutral-300 border border-neutral-800 hover:border-neutral-600 transition">${s.title}</button>`;
       });
       c.innerHTML = h;
     }
@@ -631,22 +655,25 @@
       const fExp = document.getElementById("filterExpenseBtn");
 
       fAll.addEventListener("click", () => {
-        [fAll, fInc, fExp].forEach(b => b.className = "tab-btn flex-1 py-1 text-[11px] font-bold rounded-lg text-slate-400");
-        fAll.className = "tab-btn active flex-1 py-1 text-[11px] font-bold rounded-lg text-white";
+        fAll.className = "tab-btn active flex-1 py-1.5 text-[11px] font-extrabold rounded-lg text-black transition";
+        fInc.className = "tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-emerald-400 hover:text-emerald-300 transition";
+        fExp.className = "tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-rose-500 hover:text-rose-400 transition";
         activeFilter = "all";
         render();
       });
 
       fInc.addEventListener("click", () => {
-        [fAll, fInc, fExp].forEach(b => b.className = "tab-btn flex-1 py-1 text-[11px] font-bold rounded-lg text-slate-400");
-        fInc.className = "tab-btn active flex-1 py-1 text-[11px] font-bold rounded-lg text-white";
+        fAll.className = "tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-neutral-400 hover:text-white transition";
+        fInc.className = "tab-btn active flex-1 py-1.5 text-[11px] font-extrabold rounded-lg text-black transition";
+        fExp.className = "tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-rose-500 hover:text-rose-400 transition";
         activeFilter = "income";
         render();
       });
 
       fExp.addEventListener("click", () => {
-        [fAll, fInc, fExp].forEach(b => b.className = "tab-btn flex-1 py-1 text-[11px] font-bold rounded-lg text-slate-400");
-        fExp.className = "tab-btn active flex-1 py-1 text-[11px] font-bold rounded-lg text-white";
+        fAll.className = "tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-neutral-400 hover:text-white transition";
+        fInc.className = "tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-emerald-400 hover:text-emerald-300 transition";
+        fExp.className = "tab-btn active flex-1 py-1.5 text-[11px] font-extrabold rounded-lg text-black transition";
         activeFilter = "expense";
         render();
       });
@@ -669,15 +696,15 @@
 
       typeExpBtn.addEventListener("click", () => {
         txTypeInput.value = "expense";
-        typeExpBtn.className = "py-2 text-xs font-bold rounded-lg text-white bg-rose-600 shadow-sm flex items-center justify-center gap-1.5";
-        typeIncBtn.className = "py-2 text-xs font-bold rounded-lg text-slate-400 flex items-center justify-center gap-1.5";
+        typeExpBtn.className = "py-2.5 text-xs font-extrabold rounded-lg text-white bg-rose-600 shadow-sm flex items-center justify-center gap-1.5 transition";
+        typeIncBtn.className = "py-2.5 text-xs font-bold rounded-lg text-neutral-400 flex items-center justify-center gap-1.5 transition";
         renderSuggestions("expense");
       });
 
       typeIncBtn.addEventListener("click", () => {
         txTypeInput.value = "income";
-        typeIncBtn.className = "py-2 text-xs font-bold rounded-lg text-white bg-emerald-600 shadow-sm flex items-center justify-center gap-1.5";
-        typeExpBtn.className = "py-2 text-xs font-bold rounded-lg text-slate-400 flex items-center justify-center gap-1.5";
+        typeIncBtn.className = "py-2.5 text-xs font-extrabold rounded-lg text-white bg-emerald-600 shadow-sm flex items-center justify-center gap-1.5 transition";
+        typeExpBtn.className = "py-2.5 text-xs font-bold rounded-lg text-neutral-400 flex items-center justify-center gap-1.5 transition";
         renderSuggestions("income");
       });
 
@@ -758,13 +785,13 @@
 
         diffBox.classList.remove("hidden");
         if (Math.abs(diff) < 0.01) {
-          diffBox.className = "p-2.5 rounded-xl border text-xs bg-emerald-950/60 border-emerald-800 text-emerald-300";
+          diffBox.className = "p-2.5 rounded-xl border text-xs bg-neutral-900 border-neutral-700 text-emerald-400 font-bold";
           diffBox.textContent = "Balance 100% Match Hai!";
         } else if (diff < 0) {
-          diffBox.className = "p-2.5 rounded-xl border text-xs bg-rose-950/60 border-rose-800 text-rose-300";
+          diffBox.className = "p-2.5 rounded-xl border text-xs bg-neutral-900 border-rose-900 text-rose-400";
           diffBox.textContent = `Easypaisa mein ${formatPKR(Math.abs(diff))} kam hain. Auto-match dabane se adjust ho jayega.`;
         } else {
-          diffBox.className = "p-2.5 rounded-xl border text-xs bg-cyan-950/60 border-cyan-800 text-cyan-300";
+          diffBox.className = "p-2.5 rounded-xl border text-xs bg-neutral-900 border-emerald-900 text-emerald-400";
           diffBox.textContent = `Easypaisa mein ${formatPKR(diff)} zyada hain. Auto-match dabane se adjust ho jayega.`;
         }
       });
