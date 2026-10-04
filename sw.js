@@ -1,4 +1,4 @@
-const CACHE_NAME = 'khaata-v6';
+const CACHE_NAME = 'khaata-v7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

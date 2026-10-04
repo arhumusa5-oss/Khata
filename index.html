@@ -448,12 +448,31 @@
       });
     }
 
-    // PIN Lock Management
+    // PIN Lock Management - First Launch Creation & Security
     const PIN_STORAGE_KEY = 'khaata_pin_code';
     let currentPinInput = "";
+    let pinSetupDraft = "";
+    let pinState = "unlock"; // 'create', 'confirm', 'unlock'
 
-    function getStoredPin() {
-      return localStorage.getItem(PIN_STORAGE_KEY) || "1234";
+    function initPinState() {
+      const savedPin = localStorage.getItem(PIN_STORAGE_KEY);
+      const titleElem = document.getElementById("pinTitleText");
+      const promptElem = document.getElementById("pinPromptText");
+
+      if (!savedPin) {
+        // User creates their own PIN on first open!
+        pinState = "create";
+        pinSetupDraft = "";
+        if (titleElem) titleElem.textContent = "Naya PIN Banayein";
+        if (promptElem) promptElem.textContent = "Apni marzi ka 4-digit PIN daalein";
+      } else {
+        // Normal open
+        pinState = "unlock";
+        if (titleElem) titleElem.textContent = "Khaata Secured";
+        if (promptElem) promptElem.textContent = "Apna 4-digit PIN daalein";
+      }
+      currentPinInput = "";
+      updatePinDots();
     }
 
     function updatePinDots() {
@@ -471,10 +490,11 @@
       if (currentPinInput.length >= 4) return;
       currentPinInput += digit;
       updatePinDots();
-      document.getElementById("pinErrorMsg").classList.add("opacity-0");
+      const errMsg = document.getElementById("pinErrorMsg");
+      if (errMsg) errMsg.classList.add("opacity-0");
 
       if (currentPinInput.length === 4) {
-        setTimeout(validateEnteredPin, 100);
+        setTimeout(processPinEntry, 100);
       }
     };
 
@@ -482,33 +502,82 @@
       if (currentPinInput.length > 0) {
         currentPinInput = currentPinInput.slice(0, -1);
         updatePinDots();
-        document.getElementById("pinErrorMsg").classList.add("opacity-0");
+        const errMsg = document.getElementById("pinErrorMsg");
+        if (errMsg) errMsg.classList.add("opacity-0");
       }
     };
 
-    function validateEnteredPin() {
-      const correctPin = getStoredPin();
-      if (currentPinInput === correctPin) {
-        const dots = document.querySelectorAll(".pin-dot");
-        dots.forEach(d => d.className = "pin-dot w-4 h-4 rounded-full bg-emerald-500 border-2 border-emerald-500 scale-125 transition-all");
-        setTimeout(() => {
-          const lockScreen = document.getElementById("pinLockScreen");
-          lockScreen.classList.add("opacity-0", "pointer-events-none", "transition-opacity", "duration-300");
-          setTimeout(() => lockScreen.classList.add("hidden"), 300);
-          currentPinInput = "";
-          updatePinDots();
-        }, 180);
-      } else {
-        const dots = document.querySelectorAll(".pin-dot");
-        dots.forEach(d => d.className = "pin-dot w-4 h-4 rounded-full bg-rose-500 border-2 border-rose-500 transition-all");
-        const errMsg = document.getElementById("pinErrorMsg");
-        errMsg.classList.remove("opacity-0");
+    function processPinEntry() {
+      const titleElem = document.getElementById("pinTitleText");
+      const promptElem = document.getElementById("pinPromptText");
+      const errMsg = document.getElementById("pinErrorMsg");
+      const dots = document.querySelectorAll(".pin-dot");
 
-        setTimeout(() => {
-          currentPinInput = "";
-          updatePinDots();
-        }, 600);
+      if (pinState === "create") {
+        pinSetupDraft = currentPinInput;
+        currentPinInput = "";
+        pinState = "confirm";
+        if (titleElem) titleElem.textContent = "PIN Confirm Karein";
+        if (promptElem) promptElem.textContent = "Wohi 4-digit PIN dobara daalein";
+        updatePinDots();
+        return;
       }
+
+      if (pinState === "confirm") {
+        if (currentPinInput === pinSetupDraft) {
+          localStorage.setItem(PIN_STORAGE_KEY, pinSetupDraft);
+          dots.forEach(d => d.className = "pin-dot w-4 h-4 rounded-full bg-emerald-500 border-2 border-emerald-500 scale-125 transition-all");
+          if (errMsg) {
+            errMsg.textContent = "PIN Kamyabi Se Set Ho Gaya!";
+            errMsg.className = "text-xs font-bold text-emerald-400 h-4 transition-all opacity-100";
+          }
+          setTimeout(unlockApp, 350);
+        } else {
+          dots.forEach(d => d.className = "pin-dot w-4 h-4 rounded-full bg-rose-500 border-2 border-rose-500 transition-all");
+          if (errMsg) {
+            errMsg.textContent = "PIN match nahi hua! Dobara banayein";
+            errMsg.className = "text-xs font-bold text-rose-500 h-4 transition-all opacity-100";
+          }
+          setTimeout(() => {
+            pinState = "create";
+            pinSetupDraft = "";
+            currentPinInput = "";
+            if (titleElem) titleElem.textContent = "Naya PIN Banayein";
+            if (promptElem) promptElem.textContent = "Apni marzi ka 4-digit PIN daalein";
+            if (errMsg) errMsg.classList.add("opacity-0");
+            updatePinDots();
+          }, 800);
+        }
+        return;
+      }
+
+      if (pinState === "unlock") {
+        const savedPin = localStorage.getItem(PIN_STORAGE_KEY);
+        if (currentPinInput === savedPin) {
+          dots.forEach(d => d.className = "pin-dot w-4 h-4 rounded-full bg-emerald-500 border-2 border-emerald-500 scale-125 transition-all");
+          setTimeout(unlockApp, 200);
+        } else {
+          dots.forEach(d => d.className = "pin-dot w-4 h-4 rounded-full bg-rose-500 border-2 border-rose-500 transition-all");
+          if (errMsg) {
+            errMsg.textContent = "Ghalat PIN! Login nahi ho sakta";
+            errMsg.className = "text-xs font-bold text-rose-500 h-4 transition-all opacity-100";
+          }
+          setTimeout(() => {
+            currentPinInput = "";
+            updatePinDots();
+          }, 600);
+        }
+      }
+    }
+
+    function unlockApp() {
+      const lockScreen = document.getElementById("pinLockScreen");
+      if (lockScreen) {
+        lockScreen.classList.add("opacity-0", "pointer-events-none", "transition-opacity", "duration-300");
+        setTimeout(() => lockScreen.classList.add("hidden"), 300);
+      }
+      currentPinInput = "";
+      updatePinDots();
     }
 
     // Storage Keys
@@ -1000,14 +1069,18 @@
           }
         };
         reader.readAsText(file);
+      });
+
       // Change PIN Listener
       document.getElementById("changePinBtn").addEventListener("click", () => {
-        const curPin = getStoredPin();
-        const oldAttempt = prompt("Pehlay mojooda PIN daalein:");
-        if (oldAttempt === null) return;
-        if (oldAttempt !== curPin) {
-          alert("Ghalat mojooda PIN!");
-          return;
+        const curPin = localStorage.getItem(PIN_STORAGE_KEY);
+        if (curPin) {
+          const oldAttempt = prompt("Pehlay mojooda PIN daalein:");
+          if (oldAttempt === null) return;
+          if (oldAttempt !== curPin) {
+            alert("Ghalat mojooda PIN!");
+            return;
+          }
         }
         const newPin = prompt("Naya 4-Digit PIN daalein (numbers only):");
         if (!newPin || newPin.trim().length !== 4 || isNaN(newPin.trim())) {
@@ -1015,9 +1088,24 @@
           return;
         }
         localStorage.setItem(PIN_STORAGE_KEY, newPin.trim());
-        showToast("Naya PIN set ho gaya!");
+        showToast("Naya PIN kamyabi se set ho gaya!");
         setModal.classList.add("hidden");
       });
+
+      // Keyboard support for typing PIN
+      window.addEventListener("keydown", (e) => {
+        const lockScreen = document.getElementById("pinLockScreen");
+        if (lockScreen && !lockScreen.classList.contains("hidden")) {
+          if (e.key >= "0" && e.key <= "9") {
+            handlePinKey(e.key);
+          } else if (e.key === "Backspace") {
+            handlePinBackspace();
+          }
+        }
+      });
+
+      // Initialize PIN Lock on App Launch
+      initPinState();
 
     });
   </script>
