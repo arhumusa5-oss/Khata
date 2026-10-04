@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Khaata - Mobile Finance Tracker</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" href="./icons/favicon.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+
+  <!-- Local Standalone Assets (100% Offline) -->
+  <script src="./tailwind.min.js"></script>
+  <script src="./lucide.min.js"></script>
+
+  <style>
+    /* Mobile App Tweaks */
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+    input, select, textarea {
+      user-select: auto;
+    }
+    .safe-top {
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    .safe-bottom {
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+    .modal-backdrop {
+      transition: opacity 0.2s ease-in-out;
+    }
+    .tab-btn.active {
+      background-color: #059669 !important;
+      color: #ffffff !important;
+    }
+  </style>
+</head>
+<body class="min-h-full bg-slate-950 text-slate-100 flex flex-col antialiased safe-top">
+
+  <!-- Top App Bar -->
+  <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-30 px-4 py-3">
+    <div class="max-w-md mx-auto flex items-center justify-between gap-2">
+      
+      <!-- Brand -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-md shadow-emerald-500/20">
+          <i data-lucide="wallet" class="w-4 h-4 text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-1.5 leading-none">
+            Khaata
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Mobile</span>
+          </h1>
+          <p class="text-[10px] text-slate-400 mt-0.5">Easypaisa & Finance OS</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="flex items-center gap-1.5">
+        <button id="reconcileHeaderBtn" title="Check Balance" class="p-2 rounded-xl bg-slate-800 text-indigo-300 border border-slate-700/80 active:scale-95 transition">
+          <i data-lucide="scale" class="w-4 h-4"></i>
+        </button>
+        <button id="rolloverHeaderBtn" title="Month End Rollover" class="p-2 rounded-xl bg-slate-800 text-amber-300 border border-slate-700/80 active:scale-95 transition">
+          <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+        </button>
+        <button id="backupModalBtn" title="Backup / Export" class="p-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700/80 active:scale-95 transition">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Month Bar -->
+  <div class="bg-slate-900/60 border-b border-slate-800/80 px-4 py-2">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <button id="prevMonthBtn" class="p-1.5 rounded-lg bg-slate-800 text-slate-300 active:scale-90 transition">
+        <i data-lucide="chevron-left" class="w-4 h-4"></i>
+      </button>
+
+      <div class="flex items-center gap-2">
+        <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i>
+        <span id="currentMonthDisplay" class="font-bold text-sm text-white">October 2026</span>
+      </div>
+
+      <button id="nextMonthBtn" class="p-1.5 rounded-lg bg-slate-800 text-slate-300 active:scale-90 transition">
+        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Scrollable Content -->
+  <main class="flex-1 max-w-md w-full mx-auto p-4 space-y-4 pb-24">
+    
+    <!-- Hero Card: Live Account Balance -->
+    <div class="bg-gradient-to-br from-slate-900 via-slate-850 to-emerald-950/60 border border-emerald-500/40 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+      <div class="flex items-center justify-between text-xs text-emerald-300 mb-1">
+        <span class="flex items-center gap-1.5 font-medium">
+          <i data-lucide="landmark" class="w-4 h-4"></i>
+          Live Account Balance
+        </span>
+        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-md font-mono">Easypaisa</span>
+      </div>
+      <div class="text-3xl font-black tracking-tight text-white mt-1" id="statLiveBalance">Rs. 0</div>
+      
+      <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-800/80 text-[11px] text-slate-400">
+        <span class="flex items-center gap-1">
+          Starting: <strong class="text-white" id="statStartBalance">Rs. 0</strong>
+        </span>
+        <button id="editStartBalanceBtn" class="text-blue-400 font-medium hover:underline flex items-center gap-1">
+          <i data-lucide="pencil" class="w-3 h-3"></i> Edit
+        </button>
+      </div>
+    </div>
+
+    <!-- Monthly Summary 3-Grid -->
+    <div class="grid grid-cols-3 gap-2">
+      
+      <!-- Total Income -->
+      <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-3 text-center">
+        <div class="text-[10px] text-emerald-400 font-semibold uppercase flex items-center justify-center gap-1">
+          <i data-lucide="arrow-down-left" class="w-3 h-3"></i> Income
+        </div>
+        <div class="text-sm font-bold text-emerald-400 mt-1 truncate" id="statTotalIncome">+Rs. 0</div>
+      </div>
+
+      <!-- Total Spent -->
+      <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-3 text-center">
+        <div class="text-[10px] text-rose-400 font-semibold uppercase flex items-center justify-center gap-1">
+          <i data-lucide="arrow-up-right" class="w-3 h-3"></i> Kharcha
+        </div>
+        <div class="text-sm font-bold text-rose-400 mt-1 truncate" id="statTotalExpense">-Rs. 0</div>
+      </div>
+
+      <!-- Saved / Bache -->
+      <div class="bg-slate-900/80 border border-slate-800/90 rounded-2xl p-3 text-center">
+        <div class="text-[10px] text-cyan-400 font-semibold uppercase flex items-center justify-center gap-1">
+          <i data-lucide="piggy-bank" class="w-3 h-3"></i> Bachat
+        </div>
+        <div class="text-sm font-bold text-cyan-400 mt-1 truncate" id="statSavedThisMonth">Rs. 0</div>
+      </div>
+
+    </div>
+
+    <!-- Filter & Search Bar -->
+    <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-3 space-y-3">
+      
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 flex-1">
+          <button id="filterAllBtn" class="tab-btn active flex-1 py-1 text-[11px] font-bold rounded-lg text-white">Tamam</button>
+          <button id="filterIncomeBtn" class="tab-btn flex-1 py-1 text-[11px] font-bold rounded-lg text-slate-400">Income</button>
+          <button id="filterExpenseBtn" class="tab-btn flex-1 py-1 text-[11px] font-bold rounded-lg text-slate-400">Kharcha</button>
+        </div>
+      </div>
+
+      <div class="relative">
+        <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+        <input type="text" id="searchInput" placeholder="Search item ya category..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+      </div>
+
+    </div>
+
+    <!-- Transactions List -->
+    <div class="space-y-2" id="transactionsList">
+      <!-- Dynamic transaction cards -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden py-10 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-slate-800/60 flex items-center justify-center text-slate-500 mx-auto mb-2">
+        <i data-lucide="receipt" class="w-5 h-5"></i>
+      </div>
+      <p class="text-xs text-slate-400 font-medium">Koi entry nahi mili</p>
+      <p class="text-[11px] text-slate-500 mt-0.5">Neeche diye gaye "+" button se pehli entry daalein.</p>
+    </div>
+
+  </main>
+
+  <!-- Bottom Floating Action Bar -->
+  <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent pointer-events-none safe-bottom z-20">
+    <div class="max-w-md mx-auto flex items-center justify-center pointer-events-auto">
+      <button id="openAddModalBtn" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-sm shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-2 active:scale-95 transition">
+        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+        <span>+ Nayi Entry Daalein</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- 1. Add Entry Modal -->
+  <div id="transactionModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          Nayi Entry Daalein
+        </h3>
+        <button id="closeModalBtn" class="p-1 rounded-lg text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="transactionForm" class="space-y-3.5">
+        
+        <!-- Type Selector -->
+        <div class="grid grid-cols-2 gap-2 p-1 bg-slate-950 rounded-xl border border-slate-800">
+          <button type="button" id="typeExpenseBtn" class="py-2 text-xs font-bold rounded-lg text-white bg-rose-600 shadow-sm flex items-center justify-center gap-1.5">
+            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+            Kharcha (Spent)
+          </button>
+          <button type="button" id="typeIncomeBtn" class="py-2 text-xs font-bold rounded-lg text-slate-400 flex items-center justify-center gap-1.5">
+            <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
+            Income (Aaye)
+          </button>
+        </div>
+        <input type="hidden" id="txType" value="expense">
+
+        <!-- Date & Amount -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-medium text-slate-400 mb-1">Date</label>
+            <input type="date" id="txDate" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-slate-400 mb-1">Amount (PKR)</label>
+            <input type="number" id="txAmount" min="1" step="any" placeholder="2500" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold focus:outline-none focus:border-emerald-500">
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div>
+          <label class="block text-[11px] font-medium text-slate-400 mb-1">Title / Kis Cheez Par</label>
+          <input type="text" id="txTitle" placeholder="e.g. Rashan, Petrol, Salary" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+          <div class="flex flex-wrap gap-1.5 mt-2" id="quickSuggestions"></div>
+        </div>
+
+        <!-- Category -->
+        <div>
+          <label class="block text-[11px] font-medium text-slate-400 mb-1">Category</label>
+          <select id="txCategory" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+            <option value="Groceries / Food">Groceries / Food</option>
+            <option value="Bills & Utilities">Bills & Utilities</option>
+            <option value="Fuel / Transport">Fuel / Transport</option>
+            <option value="Shopping & Clothes">Shopping & Clothes</option>
+            <option value="Transfer to Friend/Family">Transfer to Friend/Family</option>
+            <option value="Easypaisa Fee / Tax">Easypaisa Fee / Tax</option>
+            <option value="Salary / Client">Salary / Client</option>
+            <option value="Freelance / Business">Freelance / Business</option>
+            <option value="General / Misc">General / Misc</option>
+          </select>
+        </div>
+
+        <button type="submit" class="w-full py-3 rounded-xl bg-emerald-600 font-bold text-xs text-white shadow-lg shadow-emerald-600/30 transition active:scale-95">
+          Save Entry
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Set Starting Balance Modal -->
+  <div id="startBalanceModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="history" class="w-4 h-4 text-blue-400"></i>
+          Starting Balance Set Karein
+        </h3>
+        <button id="closeStartBalanceBtn" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400 leading-relaxed">
+        Month ke shuru mein account mein kitne rupay thay? (Aapka example: <strong>70,000</strong>):
+      </p>
+
+      <div>
+        <input type="number" id="inputStartingBalance" step="any" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white font-bold focus:outline-none focus:border-blue-500">
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" id="cancelStartBalanceBtn" class="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
+        <button type="button" id="saveStartBalanceBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Reconcile Balance Modal -->
+  <div id="reconcileModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="scale" class="w-4 h-4 text-indigo-400"></i>
+          Easypaisa Balance Match
+        </h3>
+        <button id="closeReconcileBtn" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs flex justify-between">
+        <span class="text-slate-400">App Calculated:</span>
+        <span class="font-bold text-white" id="reconcileAppCalculated">Rs. 0</span>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-slate-300 mb-1">Easypaisa mein abhi kitne hain?</label>
+        <input type="number" id="inputActualBalance" step="any" placeholder="e.g. 69500" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white font-bold focus:outline-none focus:border-indigo-500">
+      </div>
+
+      <div id="diffAlertBox" class="hidden p-2.5 rounded-xl border text-xs"></div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" id="cancelReconcileBtn" class="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
+        <button type="button" id="applyReconcileBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white">Auto-Match</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Month End Rollover Modal -->
+  <div id="rolloverModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="arrow-right-circle" class="w-4 h-4 text-amber-400"></i>
+          Month End Rollover
+        </h3>
+        <button id="closeRolloverBtn" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400">
+        Is month ka aakhri balance aglay month ke <strong>Starting Balance</strong> mein transfer ho jayega:
+      </p>
+
+      <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs flex justify-between">
+        <span class="text-slate-400">Closing Balance:</span>
+        <span class="font-bold text-emerald-400" id="rolloverCalculatedBalance">Rs. 0</span>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-slate-300 mb-1">Carry Forward Amount:</label>
+        <input type="number" id="inputCarryForwardAmount" step="any" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white font-bold focus:outline-none focus:border-amber-500">
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" id="cancelRolloverBtn" class="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
+        <button type="button" id="confirmRolloverBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-600 text-white">Start Next Month</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Settings & Backup Modal -->
+  <div id="settingsModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i>
+          Settings & Backup
+        </h3>
+        <button id="closeSettingsBtn" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2">
+        <button id="exportCsvBtn" class="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700 flex items-center justify-between">
+          <span class="flex items-center gap-2"><i data-lucide="download" class="w-4 h-4 text-emerald-400"></i> Export to Excel (CSV)</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+        </button>
+
+        <button id="exportJsonBtn" class="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700 flex items-center justify-between">
+          <span class="flex items-center gap-2"><i data-lucide="database" class="w-4 h-4 text-blue-400"></i> Backup All Data (JSON)</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+        </button>
+
+        <label class="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700 flex items-center justify-between cursor-pointer">
+          <span class="flex items-center gap-2"><i data-lucide="upload" class="w-4 h-4 text-amber-400"></i> Restore Backup File</span>
+          <input type="file" id="importJsonInput" accept=".json" class="sr-only">
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+        </label>
+      </div>
+
+      <div class="pt-2 border-t border-slate-800 text-[11px] text-slate-500 text-center">
+        Khaata Mobile OS &bull; 100% Offline Storage
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed top-5 left-4 right-4 z-50 transform -translate-y-24 opacity-0 transition-all duration-300 px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center justify-center gap-2 border bg-emerald-950/95 text-emerald-200 border-emerald-800">
+    <i id="toastIcon" data-lucide="check-circle" class="w-4 h-4"></i>
+    <span id="toastMsg">Notification</span>
+  </div>
+
+  <!-- PWA Offline Controller & Storage Script -->
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW reg fail:', err));
+      });
+    }
+
+    // Storage Keys
+    const STORAGE_KEY = 'khaata_db_v1';
+
+    function getDB() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        // Initialize with October 2026 Starting Balance = 70,000 as requested!
+        const initial = {
+          months: {
+            "2026-10": { starting_balance: 70000, is_closed: 0 }
+          },
+          transactions: []
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+        return initial;
+      }
+      return JSON.parse(raw);
+    }
+
+    function saveDB(db) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    }
+
+    // App State
+    let currentMonth = "2026-10";
+    let activeFilter = "all";
+
+    function formatPKR(val, showSign = false) {
+      const num = Number(val) || 0;
+      const formatted = Math.abs(num).toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+      if (showSign && num > 0) return `+Rs. ${formatted}`;
+      if (showSign && num < 0) return `-Rs. ${formatted}`;
+      return `Rs. ${formatted}`;
+    }
+
+    function formatMonthHeading(mKey) {
+      const [y, m] = mKey.split("-");
+      const d = new Date(Number(y), Number(m) - 1, 1);
+      return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+
+    function showToast(msg, isError = false) {
+      const t = document.getElementById("toast");
+      document.getElementById("toastMsg").textContent = msg;
+      if (isError) {
+        t.className = "fixed top-5 left-4 right-4 z-50 px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center justify-center gap-2 border bg-rose-950/95 text-rose-200 border-rose-800 transition-all duration-300 transform translate-y-0 opacity-100";
+      } else {
+        t.className = "fixed top-5 left-4 right-4 z-50 px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center justify-center gap-2 border bg-emerald-950/95 text-emerald-200 border-emerald-800 transition-all duration-300 transform translate-y-0 opacity-100";
+      }
+      setTimeout(() => {
+        t.classList.remove("translate-y-0", "opacity-100");
+        t.classList.add("-translate-y-24", "opacity-0");
+      }, 3000);
+    }
+
+    function render() {
+      const db = getDB();
+      document.getElementById("currentMonthDisplay").textContent = formatMonthHeading(currentMonth);
+
+      // Meta for month
+      let meta = db.months[currentMonth];
+      if (!meta) {
+        // Calculate starting balance from previous month if exists
+        const [y, m] = currentMonth.split("-").map(Number);
+        const prevM = m === 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, '0')}`;
+        const prevMeta = db.months[prevM];
+        let calcStart = 0;
+        if (prevMeta) {
+          const prevTx = db.transactions.filter(t => t.month_key === prevM);
+          const inc = prevTx.filter(t => t.type === 'income').reduce((a,b)=>a+b.amount, 0);
+          const exp = prevTx.filter(t => t.type === 'expense').reduce((a,b)=>a+b.amount, 0);
+          const adj = prevTx.filter(t => t.type === 'adjustment').reduce((a,b)=>a+b.amount, 0);
+          calcStart = prevMeta.starting_balance + inc - exp + adj;
+        }
+        meta = { starting_balance: calcStart, is_closed: 0 };
+        db.months[currentMonth] = meta;
+        saveDB(db);
+      }
+
+      // Month txs
+      const monthTx = db.transactions.filter(t => t.month_key === currentMonth);
+      const totalInc = monthTx.filter(t => t.type === 'income').reduce((a,b)=>a+b.amount, 0);
+      const totalExp = monthTx.filter(t => t.type === 'expense').reduce((a,b)=>a+b.amount, 0);
+      const totalAdj = monthTx.filter(t => t.type === 'adjustment').reduce((a,b)=>a+b.amount, 0);
+      const saved = totalInc - totalExp;
+      const liveBal = meta.starting_balance + totalInc - totalExp + totalAdj;
+
+      // Update Cards
+      document.getElementById("statStartBalance").textContent = formatPKR(meta.starting_balance);
+      document.getElementById("statLiveBalance").textContent = formatPKR(liveBal);
+      document.getElementById("statTotalIncome").textContent = formatPKR(totalInc, true);
+      document.getElementById("statTotalExpense").textContent = formatPKR(-totalExp, true);
+      document.getElementById("statSavedThisMonth").textContent = formatPKR(saved, true);
+
+      // Render Transaction List
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      let filtered = monthTx.filter(t => {
+        if (activeFilter === 'income' && t.type !== 'income') return false;
+        if (activeFilter === 'expense' && t.type !== 'expense') return false;
+        if (search && !t.title.toLowerCase().includes(search) && !t.category.toLowerCase().includes(search)) return false;
+        return true;
+      });
+
+      filtered.sort((a,b) => b.id - a.id);
+
+      const listContainer = document.getElementById("transactionsList");
+      const emptyState = document.getElementById("emptyState");
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = "";
+        emptyState.classList.remove("hidden");
+      } else {
+        emptyState.classList.add("hidden");
+        let html = "";
+        filtered.forEach(tx => {
+          let badgeColor = tx.type === 'income' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : (tx.type === 'expense' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20');
+          let amtColor = tx.type === 'income' ? 'text-emerald-400' : (tx.type === 'expense' ? 'text-rose-400' : 'text-indigo-400');
+          let sign = tx.type === 'income' ? '+' : (tx.type === 'expense' ? '-' : (tx.amount >= 0 ? '+' : ''));
+
+          html += `
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-3 shadow-sm">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-xs text-white truncate">${escapeHtml(tx.title)}</span>
+                  <span class="text-[9px] px-1.5 py-0.5 rounded-full border ${badgeColor} font-bold uppercase">${tx.type}</span>
+                </div>
+                <div class="flex items-center gap-2 mt-1 text-[10px] text-slate-500 font-mono">
+                  <span>${tx.date}</span>
+                  <span>&bull;</span>
+                  <span class="text-slate-400">${escapeHtml(tx.category)}</span>
+                </div>
+              </div>
+              <div class="text-right flex-shrink-0 flex items-center gap-2">
+                <span class="text-sm font-bold font-mono ${amtColor}">${sign}${formatPKR(Math.abs(tx.amount))}</span>
+                <button onclick="deleteTx(${tx.id})" class="p-1 rounded-lg text-slate-600 hover:text-rose-400">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          `;
+        });
+        listContainer.innerHTML = html;
+      }
+      lucide.createIcons();
+    }
+
+    function escapeHtml(s) {
+      return (s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    }
+
+    window.deleteTx = function(id) {
+      if (!confirm("Entry delete karni hai?")) return;
+      const db = getDB();
+      db.transactions = db.transactions.filter(t => t.id !== id);
+      saveDB(db);
+      showToast("Entry delete ho gayi");
+      render();
+    };
+
+    // Quick Suggestions
+    const suggestions = {
+      expense: [
+        { title: "Rashan / Grocery", cat: "Groceries / Food" },
+        { title: "Petrol", cat: "Fuel / Transport" },
+        { title: "Bijli / Gas Bill", cat: "Bills & Utilities" },
+        { title: "Chai / Khana", cat: "Groceries / Food" },
+        { title: "Easypaisa Fee", cat: "Easypaisa Fee / Tax" }
+      ],
+      income: [
+        { title: "Monthly Salary", cat: "Salary / Client" },
+        { title: "Freelance Client", cat: "Freelance / Business" },
+        { title: "Business Profit", cat: "Freelance / Business" },
+        { title: "Payment Received", cat: "Salary / Client" }
+      ]
+    };
+
+    function renderSuggestions(type) {
+      const c = document.getElementById("quickSuggestions");
+      let h = "";
+      (suggestions[type] || []).forEach(s => {
+        h += `<button type="button" onclick="selectSug('${s.title}', '${s.cat}')" class="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">${s.title}</button>`;
+      });
+      c.innerHTML = h;
+    }
+
+    window.selectSug = function(t, c) {
+      document.getElementById("txTitle").value = t;
+      document.getElementById("txCategory").value = c;
+    };
+
+    // Event Listeners
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      document.getElementById("txDate").value = new Date().toISOString().split("T")[0];
+      renderSuggestions("expense");
+      render();
+
+      // Month Switchers
+      document.getElementById("prevMonthBtn").addEventListener("click", () => {
+        let [y, m] = currentMonth.split("-").map(Number);
+        m -= 1; if (m === 0) { m = 12; y -= 1; }
+        currentMonth = `${y}-${String(m).padStart(2, '0')}`;
+        render();
+      });
+
+      document.getElementById("nextMonthBtn").addEventListener("click", () => {
+        let [y, m] = currentMonth.split("-").map(Number);
+        m += 1; if (m === 13) { m = 1; y += 1; }
+        currentMonth = `${y}-${String(m).padStart(2, '0')}`;
+        render();
+      });
+
+      // Filter Tabs
+      const fAll = document.getElementById("filterAllBtn");
+      const fInc = document.getElementById("filterIncomeBtn");
+      const fExp = document.getElementById("filterExpenseBtn");
+
+      fAll.addEventListener("click", () => {
+        [fAll, fInc, fExp].forEach(b => b.className = "tab-btn flex-1 py-1 text-[11px] font-bold rounded-lg text-slate-400");
+        fAll.className = "tab-btn active flex-1 py-1 text-[11px] font-bold rounded-lg text-white";
+        activeFilter = "all";
+        render();
+      });
+
+      fInc.addEventListener("click", () => {
+        [fAll, fInc, fExp].forEach(b => b.className = "tab-btn flex-1 py-1 text-[11px] font-bold rounded-lg text-slate-400");
+        fInc.className = "tab-btn active flex-1 py-1 text-[11px] font-bold rounded-lg text-white";
+        activeFilter = "income";
+        render();
+      });
+
+      fExp.addEventListener("click", () => {
+        [fAll, fInc, fExp].forEach(b => b.className = "tab-btn flex-1 py-1 text-[11px] font-bold rounded-lg text-slate-400");
+        fExp.className = "tab-btn active flex-1 py-1 text-[11px] font-bold rounded-lg text-white";
+        activeFilter = "expense";
+        render();
+      });
+
+      document.getElementById("searchInput").addEventListener("input", render);
+
+      // Add Modal
+      const txModal = document.getElementById("transactionModal");
+      document.getElementById("openAddModalBtn").addEventListener("click", () => {
+        document.getElementById("transactionForm").reset();
+        document.getElementById("txDate").value = new Date().toISOString().split("T")[0];
+        document.getElementById("typeExpenseBtn").click();
+        txModal.classList.remove("hidden");
+      });
+      document.getElementById("closeModalBtn").addEventListener("click", () => txModal.classList.add("hidden"));
+
+      const typeExpBtn = document.getElementById("typeExpenseBtn");
+      const typeIncBtn = document.getElementById("typeIncomeBtn");
+      const txTypeInput = document.getElementById("txType");
+
+      typeExpBtn.addEventListener("click", () => {
+        txTypeInput.value = "expense";
+        typeExpBtn.className = "py-2 text-xs font-bold rounded-lg text-white bg-rose-600 shadow-sm flex items-center justify-center gap-1.5";
+        typeIncBtn.className = "py-2 text-xs font-bold rounded-lg text-slate-400 flex items-center justify-center gap-1.5";
+        renderSuggestions("expense");
+      });
+
+      typeIncBtn.addEventListener("click", () => {
+        txTypeInput.value = "income";
+        typeIncBtn.className = "py-2 text-xs font-bold rounded-lg text-white bg-emerald-600 shadow-sm flex items-center justify-center gap-1.5";
+        typeExpBtn.className = "py-2 text-xs font-bold rounded-lg text-slate-400 flex items-center justify-center gap-1.5";
+        renderSuggestions("income");
+      });
+
+      document.getElementById("transactionForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const db = getDB();
+        const dateVal = document.getElementById("txDate").value;
+        const entry = {
+          id: Date.now(),
+          month_key: dateVal.slice(0, 7),
+          date: dateVal,
+          type: txTypeInput.value,
+          title: document.getElementById("txTitle").value.trim(),
+          amount: parseFloat(document.getElementById("txAmount").value),
+          category: document.getElementById("txCategory").value
+        };
+        db.transactions.push(entry);
+        saveDB(db);
+        txModal.classList.add("hidden");
+        showToast("Entry save ho gayi!");
+        currentMonth = entry.month_key;
+        render();
+      });
+
+      // Starting Balance Modal
+      const sbModal = document.getElementById("startBalanceModal");
+      document.getElementById("editStartBalanceBtn").addEventListener("click", () => {
+        const db = getDB();
+        document.getElementById("inputStartingBalance").value = (db.months[currentMonth] || {}).starting_balance || 0;
+        sbModal.classList.remove("hidden");
+      });
+      document.getElementById("closeStartBalanceBtn").addEventListener("click", () => sbModal.classList.add("hidden"));
+      document.getElementById("cancelStartBalanceBtn").addEventListener("click", () => sbModal.classList.add("hidden"));
+
+      document.getElementById("saveStartBalanceBtn").addEventListener("click", () => {
+        const val = parseFloat(document.getElementById("inputStartingBalance").value) || 0;
+        const db = getDB();
+        if (!db.months[currentMonth]) db.months[currentMonth] = { starting_balance: 0, is_closed: 0 };
+        db.months[currentMonth].starting_balance = val;
+        saveDB(db);
+        sbModal.classList.add("hidden");
+        showToast("Starting balance update ho gaya!");
+        render();
+      });
+
+      // Reconcile Modal
+      const recModal = document.getElementById("reconcileModal");
+      const actualInput = document.getElementById("inputActualBalance");
+      const diffBox = document.getElementById("diffAlertBox");
+
+      document.getElementById("reconcileHeaderBtn").addEventListener("click", () => {
+        const db = getDB();
+        const monthTx = db.transactions.filter(t => t.month_key === currentMonth);
+        const inc = monthTx.filter(t => t.type === 'income').reduce((a,b)=>a+b.amount, 0);
+        const exp = monthTx.filter(t => t.type === 'expense').reduce((a,b)=>a+b.amount, 0);
+        const adj = monthTx.filter(t => t.type === 'adjustment').reduce((a,b)=>a+b.amount, 0);
+        const meta = db.months[currentMonth] || { starting_balance: 0 };
+        const calcBal = meta.starting_balance + inc - exp + adj;
+
+        document.getElementById("reconcileAppCalculated").textContent = formatPKR(calcBal);
+        actualInput.value = "";
+        diffBox.classList.add("hidden");
+        recModal.classList.remove("hidden");
+      });
+      document.getElementById("closeReconcileBtn").addEventListener("click", () => recModal.classList.add("hidden"));
+      document.getElementById("cancelReconcileBtn").addEventListener("click", () => recModal.classList.add("hidden"));
+
+      actualInput.addEventListener("input", () => {
+        const val = parseFloat(actualInput.value);
+        if (isNaN(val)) { diffBox.classList.add("hidden"); return; }
+        const db = getDB();
+        const monthTx = db.transactions.filter(t => t.month_key === currentMonth);
+        const inc = monthTx.filter(t => t.type === 'income').reduce((a,b)=>a+b.amount, 0);
+        const exp = monthTx.filter(t => t.type === 'expense').reduce((a,b)=>a+b.amount, 0);
+        const adj = monthTx.filter(t => t.type === 'adjustment').reduce((a,b)=>a+b.amount, 0);
+        const calc = (db.months[currentMonth] || { starting_balance: 0 }).starting_balance + inc - exp + adj;
+        const diff = val - calc;
+
+        diffBox.classList.remove("hidden");
+        if (Math.abs(diff) < 0.01) {
+          diffBox.className = "p-2.5 rounded-xl border text-xs bg-emerald-950/60 border-emerald-800 text-emerald-300";
+          diffBox.textContent = "Balance 100% Match Hai!";
+        } else if (diff < 0) {
+          diffBox.className = "p-2.5 rounded-xl border text-xs bg-rose-950/60 border-rose-800 text-rose-300";
+          diffBox.textContent = `Easypaisa mein ${formatPKR(Math.abs(diff))} kam hain. Auto-match dabane se adjust ho jayega.`;
+        } else {
+          diffBox.className = "p-2.5 rounded-xl border text-xs bg-cyan-950/60 border-cyan-800 text-cyan-300";
+          diffBox.textContent = `Easypaisa mein ${formatPKR(diff)} zyada hain. Auto-match dabane se adjust ho jayega.`;
+        }
+      });
+
+      document.getElementById("applyReconcileBtn").addEventListener("click", () => {
+        const val = parseFloat(actualInput.value);
+        if (isNaN(val)) return;
+        const db = getDB();
+        const monthTx = db.transactions.filter(t => t.month_key === currentMonth);
+        const inc = monthTx.filter(t => t.type === 'income').reduce((a,b)=>a+b.amount, 0);
+        const exp = monthTx.filter(t => t.type === 'expense').reduce((a,b)=>a+b.amount, 0);
+        const adj = monthTx.filter(t => t.type === 'adjustment').reduce((a,b)=>a+b.amount, 0);
+        const calc = (db.months[currentMonth] || { starting_balance: 0 }).starting_balance + inc - exp + adj;
+        const diff = val - calc;
+
+        if (Math.abs(diff) > 0.01) {
+          db.transactions.push({
+            id: Date.now(),
+            month_key: currentMonth,
+            date: new Date().toISOString().split("T")[0],
+            type: "adjustment",
+            title: "Easypaisa Auto-Adjustment",
+            amount: diff,
+            category: "Reconciliation"
+          });
+          saveDB(db);
+        }
+        recModal.classList.add("hidden");
+        showToast("Balance Match Ho Gaya!");
+        render();
+      });
+
+      // Rollover Modal
+      const rollModal = document.getElementById("rolloverModal");
+      document.getElementById("rolloverHeaderBtn").addEventListener("click", () => {
+        const db = getDB();
+        const monthTx = db.transactions.filter(t => t.month_key === currentMonth);
+        const inc = monthTx.filter(t => t.type === 'income').reduce((a,b)=>a+b.amount, 0);
+        const exp = monthTx.filter(t => t.type === 'expense').reduce((a,b)=>a+b.amount, 0);
+        const adj = monthTx.filter(t => t.type === 'adjustment').reduce((a,b)=>a+b.amount, 0);
+        const calc = (db.months[currentMonth] || { starting_balance: 0 }).starting_balance + inc - exp + adj;
+
+        document.getElementById("rolloverCalculatedBalance").textContent = formatPKR(calc);
+        document.getElementById("inputCarryForwardAmount").value = calc;
+        rollModal.classList.remove("hidden");
+      });
+      document.getElementById("closeRolloverBtn").addEventListener("click", () => rollModal.classList.add("hidden"));
+      document.getElementById("cancelRolloverBtn").addEventListener("click", () => rollModal.classList.add("hidden"));
+
+      document.getElementById("confirmRolloverBtn").addEventListener("click", () => {
+        const carry = parseFloat(document.getElementById("inputCarryForwardAmount").value) || 0;
+        const [y, m] = currentMonth.split("-").map(Number);
+        const nextM = m === 12 ? `${y + 1}-01` : `${y}-${String(m + 1).padStart(2, '0')}`;
+        const db = getDB();
+        if (!db.months[currentMonth]) db.months[currentMonth] = { starting_balance: 0, is_closed: 0 };
+        db.months[currentMonth].is_closed = 1;
+        db.months[nextM] = { starting_balance: carry, is_closed: 0 };
+        saveDB(db);
+
+        rollModal.classList.add("hidden");
+        showToast(`${nextM} shuru ho gaya! Starting Balance: Rs. ${carry.toLocaleString()}`);
+        currentMonth = nextM;
+        render();
+      });
+
+      // Settings Modal
+      const setModal = document.getElementById("settingsModal");
+      document.getElementById("backupModalBtn").addEventListener("click", () => setModal.classList.remove("hidden"));
+      document.getElementById("closeSettingsBtn").addEventListener("click", () => setModal.classList.add("hidden"));
+
+      // Export CSV
+      document.getElementById("exportCsvBtn").addEventListener("click", () => {
+        const db = getDB();
+        const list = db.transactions.filter(t => t.month_key === currentMonth);
+        let csv = "ID,Date,Type,Title,Amount,Category\n";
+        list.forEach(r => {
+          csv += `"${r.id}","${r.date}","${r.type}","${r.title.replace(/"/g, '""')}","${r.amount}","${r.category}"\n`;
+        });
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `khaata_${currentMonth}.csv`;
+        a.click();
+      });
+
+      // Export JSON
+      document.getElementById("exportJsonBtn").addEventListener("click", () => {
+        const db = getDB();
+        const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `khaata_backup_${new Date().toISOString().split("T")[0]}.json`;
+        a.click();
+      });
+
+      // Import JSON
+      document.getElementById("importJsonInput").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const data = JSON.parse(evt.target.result);
+            if (data.months && data.transactions) {
+              saveDB(data);
+              showToast("Backup kamyabi se restore ho gaya!");
+              setModal.classList.add("hidden");
+              render();
+            } else {
+              showToast("Invalid backup file", true);
+            }
+          } catch(err) {
+            showToast("File parhnay mein masla hua", true);
+          }
+        };
+        reader.readAsText(file);
+      });
+
+    });
+  </script>
+</body>
+</html>
