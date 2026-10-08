@@ -40,6 +40,35 @@
       background-color: #ffffff !important;
       color: #000000 !important;
     }
+    .sidebar-tab-btn {
+      color: #a3a3a3;
+      background-color: transparent;
+    }
+    .sidebar-tab-btn:hover {
+      background-color: #171717;
+      color: #ffffff;
+    }
+    .sidebar-tab-btn.active {
+      background-color: #ffffff !important;
+      color: #000000 !important;
+    }
+    .sidebar-tab-btn.active i {
+      color: #000000 !important;
+    }
+    .sidebar-tab-btn.active span span {
+      color: #000000 !important;
+    }
+    .biz-filter-btn.active, .pending-tab-btn.active {
+      background-color: #ffffff !important;
+      color: #000000 !important;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
   </style>
 </head>
 <body class="min-h-full bg-black text-white flex flex-col antialiased safe-top">
@@ -88,19 +117,104 @@
 
   </div>
 
+  <!-- Sidebar Backdrop Overlay -->
+  <div id="sidebarBackdrop" class="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm hidden transition-opacity duration-300 opacity-0"></div>
+
+  <!-- Vertical Sidebar Drawer (Matte Black) -->
+  <aside id="sidebarDrawer" class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-neutral-950 border-r border-neutral-800 p-5 flex flex-col justify-between transition-transform duration-300 transform -translate-x-full shadow-2xl safe-top safe-bottom select-none">
+    
+    <!-- Top Branding & Navigation -->
+    <div class="space-y-6">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-4">
+        <div class="flex items-center gap-3">
+          <img src="./icons/icon-192.png" alt="Logo" class="w-9 h-9 rounded-xl border border-neutral-800 object-contain shadow-md">
+          <div>
+            <h2 class="text-base font-black text-white tracking-tight leading-none">Khaata OS</h2>
+            <p class="text-[10px] text-neutral-400 mt-0.5">Multi-Finance Tracker</p>
+          </div>
+        </div>
+        <button type="button" id="closeSidebarBtn" class="p-1.5 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="space-y-2">
+        <div class="text-[10px] font-bold text-neutral-500 uppercase tracking-wider px-1">
+          Finances & Workspaces
+        </div>
+
+        <nav class="space-y-1.5" id="sidebarTabsList">
+          <!-- 1. Personal Finance Tab -->
+          <button type="button" data-tab-id="personal" class="sidebar-tab-btn active w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition">
+            <span class="flex items-center gap-2.5">
+              <i data-lucide="wallet" class="w-4 h-4 text-emerald-400"></i>
+              <span>Personal Finance</span>
+            </span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-neutral-800 text-neutral-300 font-mono">Easypaisa</span>
+          </button>
+
+          <!-- 2. Business Finance Tab -->
+          <button type="button" data-tab-id="business" class="sidebar-tab-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition">
+            <span class="flex items-center gap-2.5">
+              <i data-lucide="briefcase" class="w-4 h-4 text-white"></i>
+              <span>Business</span>
+            </span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-neutral-800 text-neutral-400 font-mono">Sales & P/L</span>
+          </button>
+
+          <!-- 3. Pending Tasks Tab -->
+          <button type="button" data-tab-id="pending" class="sidebar-tab-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition">
+            <span class="flex items-center gap-2.5">
+              <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+              <span>Pending Tasks</span>
+            </span>
+            <span id="sidebarPendingCountBadge" class="text-[9px] px-1.5 py-0.5 rounded-md bg-amber-950 text-amber-400 border border-amber-900 font-mono">0</span>
+          </button>
+
+          <!-- Custom Tabs injected dynamically -->
+          <div id="dynamicCustomTabsContainer" class="space-y-1.5"></div>
+        </nav>
+
+        <!-- + Naya Tab Banayein Button -->
+        <button type="button" id="openCreateTabBtn" class="w-full mt-3 py-2 px-3 rounded-xl border border-dashed border-neutral-700 hover:border-white text-neutral-300 hover:text-white text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition bg-neutral-900/50">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-400"></i>
+          <span>+ Naya Tab Banayein</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="pt-4 border-t border-neutral-800 space-y-2">
+      <div class="flex items-center justify-between text-[11px] text-neutral-400 px-1">
+        <span class="flex items-center gap-1.5">
+          <i data-lucide="cloud" class="w-3.5 h-3.5 text-emerald-400"></i>
+          Cloud Sync
+        </span>
+        <span id="sidebarCloudStatusText" class="text-emerald-400 font-mono text-[10px]">Connected</span>
+      </div>
+      <div class="text-[10px] text-neutral-500 text-center font-mono">
+        Khaata OS &bull; Matte Edition
+      </div>
+    </div>
+
+  </aside>
+
   <!-- Top App Bar (Matte Black) -->
   <header class="border-b border-neutral-800/90 bg-neutral-950/95 backdrop-blur-md sticky top-0 z-30 px-4 py-3">
     <div class="max-w-md mx-auto flex items-center justify-between gap-2">
       
-      <!-- Brand Logo & Title -->
+      <!-- Left: Menu Hamburger + Tab Title -->
       <div class="flex items-center gap-2.5">
-        <img src="./icons/icon-192.png" alt="Logo" class="w-9 h-9 rounded-xl shadow-md border border-neutral-800 object-contain">
+        <button type="button" id="toggleSidebarBtn" title="Menu / Workspaces" class="p-2 rounded-xl bg-neutral-900 text-neutral-300 border border-neutral-800 hover:text-white hover:border-neutral-700 active:scale-95 transition flex items-center justify-center">
+          <i data-lucide="menu" class="w-4 h-4"></i>
+        </button>
         <div>
-          <h1 class="text-base font-extrabold tracking-tight text-white flex items-center gap-1.5 leading-none">
-            Khaata
-            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700">OS</span>
+          <h1 id="headerAppTitle" class="text-sm font-extrabold tracking-tight text-white flex items-center gap-1.5 leading-none">
+            Personal Finance
+            <span id="headerTabBadge" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700">Khaata</span>
           </h1>
-          <p class="text-[10px] text-neutral-400 mt-0.5">Easypaisa & Finance</p>
+          <p id="headerSubTitle" class="text-[9.5px] text-neutral-400 mt-0.5">Easypaisa & Balance</p>
         </div>
       </div>
 
@@ -145,91 +259,225 @@
   <!-- Main Scrollable Content -->
   <main class="flex-1 max-w-md w-full mx-auto p-4 space-y-4 pb-28">
     
-    <!-- Hero Card: Live Account Balance (Matte Black with Crisp White) -->
-    <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-5 shadow-2xl relative overflow-hidden">
-      <div class="flex items-center justify-between text-xs text-neutral-400 mb-1">
-        <span class="flex items-center gap-1.5 font-medium tracking-wide">
-          <i data-lucide="landmark" class="w-4 h-4 text-neutral-300"></i>
-          Live Account Balance
-        </span>
-        <div class="flex items-center gap-2">
-          <button type="button" id="toggleBalanceVisibilityBtn" title="Hide/Show Balance" class="p-1 px-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition flex items-center justify-center">
-            <i id="balanceEyeIcon" data-lucide="eye-off" class="w-3.5 h-3.5"></i>
+    <!-- ================= 1. PERSONAL FINANCE VIEW ================= -->
+    <div id="personalView" class="space-y-4">
+      
+      <!-- Hero Card: Live Account Balance (Matte Black with Crisp White) -->
+      <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-5 shadow-2xl relative overflow-hidden">
+        <div class="flex items-center justify-between text-xs text-neutral-400 mb-1">
+          <span class="flex items-center gap-1.5 font-medium tracking-wide">
+            <i data-lucide="landmark" class="w-4 h-4 text-neutral-300"></i>
+            Live Account Balance
+          </span>
+          <div class="flex items-center gap-2">
+            <button type="button" id="toggleBalanceVisibilityBtn" title="Hide/Show Balance" class="p-1 px-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition flex items-center justify-center">
+              <i id="balanceEyeIcon" data-lucide="eye-off" class="w-3.5 h-3.5"></i>
+            </button>
+            <span class="text-[10px] bg-neutral-800 text-neutral-300 border border-neutral-700 px-2 py-0.5 rounded-md font-mono">Easypaisa</span>
+          </div>
+        </div>
+        <div class="text-3xl font-black tracking-tight text-white mt-1" id="statLiveBalance">Rs. 0</div>
+        
+        <div class="flex items-center justify-between mt-3 pt-3 border-t border-neutral-800 text-[11px] text-neutral-400">
+          <span class="flex items-center gap-1">
+            Starting: <strong class="text-white" id="statStartBalance">Rs. 0</strong>
+          </span>
+          <button id="editStartBalanceBtn" class="text-neutral-300 hover:text-white font-medium hover:underline flex items-center gap-1">
+            <i data-lucide="pencil" class="w-3 h-3"></i> Edit
           </button>
-          <span class="text-[10px] bg-neutral-800 text-neutral-300 border border-neutral-700 px-2 py-0.5 rounded-md font-mono">Easypaisa</span>
         </div>
       </div>
-      <div class="text-3xl font-black tracking-tight text-white mt-1" id="statLiveBalance">Rs. 0</div>
+
+      <!-- Monthly Summary 3-Grid (Green for +, Red for -) -->
+      <div class="grid grid-cols-3 gap-2">
+        
+        <!-- Total Income (+) GREEN -->
+        <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 text-center">
+          <div class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider flex items-center justify-center gap-1">
+            <i data-lucide="arrow-down-left" class="w-3 h-3 text-emerald-400 stroke-[2.5]"></i> Income (+)
+          </div>
+          <div class="text-sm font-extrabold text-emerald-400 mt-1 truncate" id="statTotalIncome">+Rs. 0</div>
+        </div>
+
+        <!-- Total Spent (-) RED -->
+        <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 text-center">
+          <div class="text-[10px] text-rose-500 font-bold uppercase tracking-wider flex items-center justify-center gap-1">
+            <i data-lucide="arrow-up-right" class="w-3 h-3 text-rose-500 stroke-[2.5]"></i> Kharcha (-)
+          </div>
+          <div class="text-sm font-extrabold text-rose-500 mt-1 truncate" id="statTotalExpense">-Rs. 0</div>
+        </div>
+
+        <!-- Saved / Bache -->
+        <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 text-center">
+          <div class="text-[10px] text-neutral-300 font-bold uppercase tracking-wider flex items-center justify-center gap-1">
+            <i data-lucide="piggy-bank" class="w-3 h-3 text-neutral-400"></i> Bachat
+          </div>
+          <div class="text-sm font-extrabold text-white mt-1 truncate" id="statSavedThisMonth">Rs. 0</div>
+        </div>
+
+      </div>
+
+      <!-- Filter & Search Bar (Matte Black & White) -->
+      <div class="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-3 space-y-3">
+        
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1 bg-black p-1 rounded-xl border border-neutral-800 flex-1">
+            <button id="filterAllBtn" class="tab-btn active flex-1 py-1.5 text-[11px] font-extrabold rounded-lg text-black transition">Tamam</button>
+            <button id="filterIncomeBtn" class="tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-emerald-400 hover:text-emerald-300 transition">+ Income</button>
+            <button id="filterExpenseBtn" class="tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-rose-500 hover:text-rose-400 transition">- Kharcha</button>
+          </div>
+        </div>
+
+        <div class="relative">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="searchInput" placeholder="Search title / item..." class="w-full bg-black border border-neutral-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 transition">
+        </div>
+
+      </div>
+
+      <!-- Transactions List -->
+      <div class="space-y-2" id="transactionsList">
+        <!-- Dynamic transaction cards -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden py-10 text-center">
+        <div class="w-12 h-12 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-600 mx-auto mb-2">
+          <i data-lucide="receipt" class="w-5 h-5"></i>
+        </div>
+        <p class="text-xs text-neutral-400 font-medium">Koi entry nahi mili</p>
+        <p class="text-[11px] text-neutral-600 mt-0.5">Neeche diye gaye button se entry daalein.</p>
+      </div>
+
+    </div>
+
+    <!-- ================= 2. BUSINESS FINANCE VIEW ================= -->
+    <div id="businessView" class="space-y-4 hidden">
       
-      <div class="flex items-center justify-between mt-3 pt-3 border-t border-neutral-800 text-[11px] text-neutral-400">
-        <span class="flex items-center gap-1">
-          Starting: <strong class="text-white" id="statStartBalance">Rs. 0</strong>
-        </span>
-        <button id="editStartBalanceBtn" class="text-neutral-300 hover:text-white font-medium hover:underline flex items-center gap-1">
-          <i data-lucide="pencil" class="w-3 h-3"></i> Edit
-        </button>
+      <!-- Grand Total Metrics (from user spreadsheet) -->
+      <div class="grid grid-cols-2 gap-2.5">
+        <!-- Total Sell / Revenue -->
+        <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3.5">
+          <div class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-neutral-300"></i> Total Sell (Sales)
+          </div>
+          <div class="text-xl font-black text-white mt-1.5 tracking-tight" id="bizStatTotalSell">Rs. 0</div>
+          <div class="text-[10px] text-neutral-400 mt-1" id="bizStatOrdersCount">0 Orders</div>
+        </div>
+
+        <!-- Total Cost -->
+        <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3.5">
+          <div class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="credit-card" class="w-3.5 h-3.5 text-neutral-300"></i> Total Cost (Khareed)
+          </div>
+          <div class="text-xl font-black text-neutral-200 mt-1.5 tracking-tight" id="bizStatTotalCost">Rs. 0</div>
+          <div class="text-[10px] text-neutral-400 mt-1">Sourcing expenses</div>
+        </div>
       </div>
+
+      <!-- Net Profit / Loss Banner -->
+      <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-4 flex items-center justify-between shadow-xl">
+        <div>
+          <span class="text-[11px] font-bold text-neutral-400 uppercase tracking-wider block">Net Profit / Loss (P/L)</span>
+          <span class="text-2xl font-black tracking-tight" id="bizStatNetProfit">Rs. 0</span>
+        </div>
+        <div id="bizProfitBadgeIcon" class="w-11 h-11 rounded-2xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-emerald-400">
+          <i data-lucide="trending-up" class="w-6 h-6 stroke-[2.5]"></i>
+        </div>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-3 space-y-2.5">
+        <div class="relative">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="bizSearchInput" placeholder="Search service, customer, phone, provider..." class="w-full bg-black border border-neutral-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 transition">
+        </div>
+
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
+          <button type="button" data-biz-filter="all" class="biz-filter-btn active text-[10px] font-extrabold px-3 py-1.5 rounded-lg bg-white text-black transition">Tamam</button>
+          <button type="button" data-biz-filter="wp1" class="biz-filter-btn text-[10px] font-bold px-3 py-1.5 rounded-lg bg-neutral-900 text-blue-400 border border-neutral-800 hover:border-blue-700 transition">WP 1</button>
+          <button type="button" data-biz-filter="wp2" class="biz-filter-btn text-[10px] font-bold px-3 py-1.5 rounded-lg bg-neutral-900 text-emerald-400 border border-neutral-800 hover:border-emerald-700 transition">WP 2</button>
+          <button type="button" data-biz-filter="profit" class="biz-filter-btn text-[10px] font-bold px-3 py-1.5 rounded-lg bg-neutral-900 text-emerald-400 border border-neutral-800 hover:border-emerald-700 transition">Munafa (+)</button>
+          <button type="button" data-biz-filter="loss" class="biz-filter-btn text-[10px] font-bold px-3 py-1.5 rounded-lg bg-neutral-900 text-rose-400 border border-neutral-800 hover:border-rose-700 transition">Nuqsan (-)</button>
+        </div>
+      </div>
+
+      <!-- Deals List Container -->
+      <div class="space-y-2.5" id="businessDealsList">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div id="bizEmptyState" class="hidden py-12 text-center">
+        <div class="w-12 h-12 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-600 mx-auto mb-2">
+          <i data-lucide="briefcase" class="w-5 h-5"></i>
+        </div>
+        <p class="text-xs text-neutral-400">Is month mein koi business deal nahi mili.</p>
+        <p class="text-[11px] text-neutral-500 mt-1">Neeche button se nayi deal add karein.</p>
+      </div>
+
     </div>
 
-    <!-- Monthly Summary 3-Grid (Green for +, Red for -) -->
-    <div class="grid grid-cols-3 gap-2">
+    <!-- ================= 3. PENDING TASKS & ORDERS VIEW ================= -->
+    <div id="pendingView" class="space-y-4 hidden">
       
-      <!-- Total Income (+) GREEN -->
-      <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 text-center">
-        <div class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider flex items-center justify-center gap-1">
-          <i data-lucide="arrow-down-left" class="w-3 h-3 text-emerald-400 stroke-[2.5]"></i> Income (+)
+      <!-- Top Metrics -->
+      <div class="grid grid-cols-2 gap-2.5">
+        <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 text-center">
+          <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center justify-center gap-1">
+            <i data-lucide="clock" class="w-3 h-3"></i> Pending Kaam
+          </span>
+          <div class="text-xl font-black text-amber-400 mt-1" id="pendingStatCount">0</div>
         </div>
-        <div class="text-sm font-extrabold text-emerald-400 mt-1 truncate" id="statTotalIncome">+Rs. 0</div>
+
+        <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 text-center">
+          <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center justify-center gap-1">
+            <i data-lucide="check-circle" class="w-3 h-3"></i> Mukammal (Done)
+          </span>
+          <div class="text-xl font-black text-emerald-400 mt-1" id="doneStatCount">0</div>
+        </div>
       </div>
 
-      <!-- Total Spent (-) RED -->
-      <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 text-center">
-        <div class="text-[10px] text-rose-500 font-bold uppercase tracking-wider flex items-center justify-center gap-1">
-          <i data-lucide="arrow-up-right" class="w-3 h-3 text-rose-500 stroke-[2.5]"></i> Kharcha (-)
+      <!-- Filters & Search -->
+      <div class="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-3 space-y-2.5">
+        <div class="relative">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="pendingSearchInput" placeholder="Search customer, service, manager, link..." class="w-full bg-black border border-neutral-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 transition">
         </div>
-        <div class="text-sm font-extrabold text-rose-500 mt-1 truncate" id="statTotalExpense">-Rs. 0</div>
+
+        <div class="flex items-center gap-1 bg-black p-1 rounded-xl border border-neutral-800">
+          <button type="button" data-pending-filter="all" class="pending-tab-btn active flex-1 py-1.5 text-[11px] font-extrabold rounded-lg text-black transition">Tamam</button>
+          <button type="button" data-pending-filter="pending" class="pending-tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-amber-400 transition">Pending ⏳</button>
+          <button type="button" data-pending-filter="done" class="pending-tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-emerald-400 transition">Done ✅</button>
+        </div>
       </div>
 
-      <!-- Saved / Bache -->
-      <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3 text-center">
-        <div class="text-[10px] text-neutral-300 font-bold uppercase tracking-wider flex items-center justify-center gap-1">
-          <i data-lucide="piggy-bank" class="w-3 h-3 text-neutral-400"></i> Bachat
+      <!-- Tasks List -->
+      <div class="space-y-2.5" id="pendingTasksList">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div id="pendingEmptyState" class="hidden py-12 text-center">
+        <div class="w-12 h-12 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-600 mx-auto mb-2">
+          <i data-lucide="check-square" class="w-5 h-5"></i>
         </div>
-        <div class="text-sm font-extrabold text-white mt-1 truncate" id="statSavedThisMonth">Rs. 0</div>
+        <p class="text-xs text-neutral-400">Koi pending task mojood nahi hai.</p>
       </div>
 
     </div>
 
-    <!-- Filter & Search Bar (Matte Black & White) -->
-    <div class="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-3 space-y-3">
-      
-      <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-1 bg-black p-1 rounded-xl border border-neutral-800 flex-1">
-          <button id="filterAllBtn" class="tab-btn active flex-1 py-1.5 text-[11px] font-extrabold rounded-lg text-black transition">Tamam</button>
-          <button id="filterIncomeBtn" class="tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-emerald-400 hover:text-emerald-300 transition">+ Income</button>
-          <button id="filterExpenseBtn" class="tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-rose-500 hover:text-rose-400 transition">- Kharcha</button>
-        </div>
+    <!-- ================= 4. CUSTOM TAB VIEW ================= -->
+    <div id="customTabView" class="space-y-4 hidden">
+      <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-5 text-center space-y-2">
+        <h3 id="customTabTitleDisplay" class="text-lg font-black text-white">Custom Workspace</h3>
+        <p class="text-xs text-neutral-400" id="customTabSubtitleDisplay">Is workspace ke transactions aur hisab kitab.</p>
+        <div class="text-2xl font-black text-white pt-2" id="customTabBalance">Rs. 0</div>
       </div>
 
-      <div class="relative">
-        <i data-lucide="search" class="w-3.5 h-3.5 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
-        <input type="text" id="searchInput" placeholder="Search title / item..." class="w-full bg-black border border-neutral-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-500 transition">
+      <div class="space-y-2" id="customTabEntriesList"></div>
+
+      <div id="customTabEmptyState" class="py-10 text-center">
+        <p class="text-xs text-neutral-400">Abhi tak koi entry nahi dali gayi.</p>
       </div>
-
-    </div>
-
-    <!-- Transactions List -->
-    <div class="space-y-2" id="transactionsList">
-      <!-- Dynamic transaction cards -->
-    </div>
-
-    <!-- Empty State -->
-    <div id="emptyState" class="hidden py-10 text-center">
-      <div class="w-12 h-12 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-600 mx-auto mb-2">
-        <i data-lucide="receipt" class="w-5 h-5"></i>
-      </div>
-      <p class="text-xs text-neutral-400 font-medium">Koi entry nahi mili</p>
-      <p class="text-[11px] text-neutral-600 mt-0.5">Neeche diye gaye button se entry daalein.</p>
     </div>
 
   </main>
@@ -238,8 +486,8 @@
   <div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/95 to-transparent pointer-events-none safe-bottom z-20">
     <div class="max-w-md mx-auto flex items-center justify-center pointer-events-auto">
       <button id="openAddModalBtn" class="w-full py-3.5 px-6 rounded-2xl bg-white hover:bg-neutral-200 text-black font-black text-sm shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition">
-        <i data-lucide="plus-circle" class="w-5 h-5 text-black stroke-[2.5]"></i>
-        <span>+ Nayi Entry Daalein</span>
+        <i id="openAddModalIcon" data-lucide="plus-circle" class="w-5 h-5 text-black stroke-[2.5]"></i>
+        <span id="openAddModalText">+ Nayi Entry Daalein</span>
       </button>
     </div>
   </div>
@@ -301,6 +549,273 @@
         </button>
 
       </form>
+    </div>
+  </div>
+
+  <!-- Business Deal Modal (Matte Black Theme) -->
+  <div id="businessDealModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-neutral-950 border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[92vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <h3 id="bizDealModalTitle" class="text-sm font-extrabold text-white flex items-center gap-2">
+          <i data-lucide="briefcase" class="w-4 h-4 text-emerald-400"></i>
+          Nayi Business Deal
+        </h3>
+        <button id="closeBizDealModalBtn" class="p-1 rounded-lg text-neutral-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="businessDealForm" class="space-y-3.5">
+        <input type="hidden" id="bizDealId" value="">
+
+        <!-- 1st: Date with Stepper (Auto set today + easy +/-) -->
+        <div>
+          <label class="block text-[11px] font-medium text-neutral-400 mb-1">Date (Tareekh)</label>
+          <div class="flex items-center gap-1.5">
+            <button type="button" id="bizDatePrevBtn" class="px-2.5 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-neutral-300 hover:text-white text-xs font-bold active:scale-95 transition" title="1 Din Pehlay">-1 Din</button>
+            <input type="date" id="bizDealDate" required class="flex-1 bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white text-center font-mono focus:outline-none focus:border-white">
+            <button type="button" id="bizDateNextBtn" class="px-2.5 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-neutral-300 hover:text-white text-xs font-bold active:scale-95 transition" title="1 Din Agay">+1 Din</button>
+            <button type="button" id="bizDateTodayBtn" class="px-2.5 py-2 bg-neutral-800 border border-neutral-700 rounded-xl text-white text-[11px] font-bold active:scale-95 transition" title="Aaj">Aaj</button>
+          </div>
+        </div>
+
+        <!-- 2nd: Service Name -->
+        <div>
+          <label class="block text-[11px] font-medium text-neutral-400 mb-1">Service Name / Kya Sell Hua</label>
+          <input type="text" id="bizDealService" placeholder="e.g. Canva Pro 1 Month, Netflix UHD, Prime" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+          <div class="flex flex-wrap gap-1.5 mt-1.5">
+            <button type="button" onclick="document.getElementById('bizDealService').value='Canva Pro 1 Month'" class="text-[9.5px] px-2 py-0.5 rounded bg-neutral-900 text-neutral-400 border border-neutral-800 hover:border-neutral-600 transition">Canva Pro</button>
+            <button type="button" onclick="document.getElementById('bizDealService').value='Netflix UHD 1 Screen'" class="text-[9.5px] px-2 py-0.5 rounded bg-neutral-900 text-neutral-400 border border-neutral-800 hover:border-neutral-600 transition">Netflix UHD</button>
+            <button type="button" onclick="document.getElementById('bizDealService').value='Prime Video 1 Month'" class="text-[9.5px] px-2 py-0.5 rounded bg-neutral-900 text-neutral-400 border border-neutral-800 hover:border-neutral-600 transition">Prime Video</button>
+            <button type="button" onclick="document.getElementById('bizDealService').value='Spotify Premium 1 Month'" class="text-[9.5px] px-2 py-0.5 rounded bg-neutral-900 text-neutral-400 border border-neutral-800 hover:border-neutral-600 transition">Spotify</button>
+            <button type="button" onclick="document.getElementById('bizDealService').value='ChatGPT Plus'" class="text-[9.5px] px-2 py-0.5 rounded bg-neutral-900 text-neutral-400 border border-neutral-800 hover:border-neutral-600 transition">ChatGPT Plus</button>
+          </div>
+        </div>
+
+        <!-- 3rd & 4th: Cost & Sell (Auto calculate Profit / Loss) -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Cost (Khareed Price)</label>
+            <input type="number" id="bizDealCost" min="0" step="any" placeholder="e.g. 350" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Sell (Bikri Price)</label>
+            <input type="number" id="bizDealSell" min="0" step="any" placeholder="e.g. 600" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-white">
+          </div>
+        </div>
+
+        <!-- Live Real-time Profit / Loss calculation indicator -->
+        <div id="bizDealLivePlBox" class="p-2.5 rounded-xl border border-neutral-800 bg-neutral-900/60 flex items-center justify-between text-xs">
+          <span class="text-neutral-400 font-medium">Single Entry Ka P/L:</span>
+          <span id="bizDealLivePlText" class="font-extrabold font-mono text-neutral-400">Rs. 0</span>
+        </div>
+
+        <!-- 5th & 6th: Customer Name & Phone Number -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Customer Name</label>
+            <input type="text" id="bizDealCustomer" placeholder="e.g. Ahmed Raza" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Phone Number</label>
+            <input type="tel" id="bizDealPhone" placeholder="03001234567" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-white">
+          </div>
+        </div>
+
+        <!-- 7th & 8th: Deal Source Dropdown (WP 1 / WP 2) & Provider Name -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Deal Kahan Se Hui?</label>
+            <select id="bizDealSource" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+              <option value="WP 1">WP 1 (WhatsApp 1)</option>
+              <option value="WP 2">WP 2 (WhatsApp 2)</option>
+              <option value="Direct">Direct / Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Provider Name (Source)</label>
+            <input type="text" id="bizDealProvider" placeholder="Supplier / Vendor" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+          </div>
+        </div>
+
+        <!-- Save & Delete Action Buttons -->
+        <div class="space-y-2 pt-2">
+          <button type="submit" id="submitBizDealBtn" class="w-full py-3.5 rounded-xl bg-white text-black font-black text-xs shadow-xl active:scale-95 transition">
+            Deal Save Karein
+          </button>
+          <button type="button" id="deleteBizDealModalBtn" class="hidden w-full py-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 font-bold text-xs border border-rose-900 active:scale-95 transition">
+            Yeh Deal Delete Karein
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Pending Task Modal (Matte Black Theme) -->
+  <div id="pendingTaskModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-neutral-950 border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[92vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <h3 id="pendingTaskModalTitle" class="text-sm font-extrabold text-white flex items-center gap-2">
+          <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+          Naya Pending Kaam
+        </h3>
+        <button id="closePendingTaskModalBtn" class="p-1 rounded-lg text-neutral-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="pendingTaskForm" class="space-y-3.5">
+        <input type="hidden" id="pendingTaskId" value="">
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Customer Name</label>
+            <input type="text" id="pendingTaskCustomer" placeholder="Customer name" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Service</label>
+            <input type="text" id="pendingTaskService" placeholder="e.g. Followers, Views" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Manager</label>
+            <input type="text" id="pendingTaskManager" placeholder="Kaam kis ke pas hai" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Quantity</label>
+            <input type="text" id="pendingTaskQty" placeholder="e.g. 1000 / 1 piece" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-medium text-neutral-400 mb-1">Link (URL / Post Link)</label>
+          <input type="url" id="pendingTaskLink" placeholder="https://..." class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-white">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Service Provider</label>
+            <input type="text" id="pendingTaskProvider" placeholder="Supplier name" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Status</label>
+            <select id="pendingTaskStatus" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+              <option value="pending">Pending ⏳</option>
+              <option value="done">Mukammal (Done) ✅</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-medium text-neutral-400 mb-1">Reminder / Yaad Dehani Note</label>
+          <input type="text" id="pendingTaskReminder" placeholder="e.g. Kal dopehr ko drop check karna hai" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+        </div>
+
+        <div class="space-y-2 pt-2">
+          <button type="submit" id="submitPendingTaskBtn" class="w-full py-3.5 rounded-xl bg-white text-black font-black text-xs shadow-xl active:scale-95 transition">
+            Kaam Save Karein
+          </button>
+          <button type="button" id="deletePendingTaskModalBtn" class="hidden w-full py-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 font-bold text-xs border border-rose-900 active:scale-95 transition">
+            Yeh Task Delete Karein
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Personal Finance Entry Edit Modal -->
+  <div id="editTxModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-neutral-950 border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+          <i data-lucide="edit-3" class="w-4 h-4 text-emerald-400"></i>
+          Entry Edit Karein
+        </h3>
+        <button id="closeEditTxModalBtn" class="p-1 rounded-lg text-neutral-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="editTxForm" class="space-y-3.5">
+        <input type="hidden" id="editTxId" value="">
+
+        <!-- Type Selector -->
+        <div class="grid grid-cols-2 gap-2 p-1 bg-black rounded-xl border border-neutral-800">
+          <button type="button" id="editTypeExpenseBtn" class="py-2.5 text-xs font-extrabold rounded-lg text-white bg-rose-600 shadow-sm flex items-center justify-center gap-1.5 transition">
+            <i data-lucide="arrow-up-right" class="w-4 h-4 stroke-[2.5]"></i>
+            Kharcha (-)
+          </button>
+          <button type="button" id="editTypeIncomeBtn" class="py-2.5 text-xs font-bold rounded-lg text-neutral-400 flex items-center justify-center gap-1.5 transition">
+            <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
+            Income (+)
+          </button>
+        </div>
+        <input type="hidden" id="editTxType" value="expense">
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Date</label>
+            <input type="date" id="editTxDate" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-medium text-neutral-400 mb-1">Amount (PKR)</label>
+            <input type="number" id="editTxAmount" min="1" step="any" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white font-bold focus:outline-none focus:border-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-medium text-neutral-400 mb-1">Title / Kis Cheez Par</label>
+          <input type="text" id="editTxTitle" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+        </div>
+
+        <div class="space-y-2 pt-2">
+          <button type="submit" id="submitEditTxBtn" class="w-full py-3.5 rounded-xl bg-white text-black font-black text-xs shadow-xl active:scale-95 transition">
+            Update Entry
+          </button>
+          <button type="button" id="deleteFromEditTxBtn" class="w-full py-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 font-bold text-xs border border-rose-900 active:scale-95 transition">
+            Entry Delete Karein
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Custom Workspace Tab Modal -->
+  <div id="createTabModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-neutral-950 border border-neutral-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="folder-plus" class="w-4 h-4 text-emerald-400"></i>
+          Naya Tab / Workspace Banayein
+        </h3>
+        <button id="closeCreateTabModalBtn" class="text-neutral-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-medium text-neutral-400 mb-1">Tab Ka Naam</label>
+          <input type="text" id="newTabNameInput" placeholder="e.g. Wholesale, Crypto, Shop" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+        </div>
+        <div>
+          <label class="block text-[11px] font-medium text-neutral-400 mb-1">Choti Description / Tag</label>
+          <input type="text" id="newTabDescInput" placeholder="e.g. Side Business" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" id="cancelCreateTabBtn" class="px-3 py-1.5 text-xs text-neutral-400 hover:text-white">Cancel</button>
+        <button type="button" id="saveNewTabBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-black hover:bg-neutral-200 active:scale-95 transition">Tab Banayein</button>
+      </div>
     </div>
   </div>
 
@@ -740,15 +1255,66 @@
       if (!raw) {
         // Initialize with October 2026 Starting Balance = 70,000 as requested!
         const initial = {
+          activeTab: 'personal',
           months: {
             "2026-10": { starting_balance: 70000, is_closed: 0 }
           },
-          transactions: []
+          transactions: [],
+          business_deals: [
+            {
+              id: 1728400001000,
+              month_key: "2026-10",
+              date: "2026-10-04",
+              service: "Canva Pro 1 Month",
+              cost: 350,
+              sell: 600,
+              pl: 250,
+              customer: "Ahmed Raza",
+              phone: "03001234567",
+              source: "WP 1",
+              provider: "Vendor Alpha",
+              created_at: 1728400001000
+            },
+            {
+              id: 1728400002000,
+              month_key: "2026-10",
+              date: "2026-10-04",
+              service: "Netflix UHD 1 Screen",
+              cost: 850,
+              sell: 1200,
+              pl: 350,
+              customer: "Usman Ali",
+              phone: "03219876543",
+              source: "WP 2",
+              provider: "Prime Digital",
+              created_at: 1728400002000
+            }
+          ],
+          pending_tasks: [
+            {
+              id: 1728400003000,
+              customer: "Bilal Raza",
+              service: "Telegram Members",
+              manager: "Arhum",
+              link: "https://t.me/example",
+              quantity: "1000",
+              provider: "SMM Provider",
+              status: "pending",
+              reminder: "Check drop rate in 24 hours",
+              created_at: 1728400003000
+            }
+          ],
+          customTabs: []
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
         return initial;
       }
-      return JSON.parse(raw);
+      const data = JSON.parse(raw);
+      if (!data.business_deals) data.business_deals = [];
+      if (!data.pending_tasks) data.pending_tasks = [];
+      if (!data.customTabs) data.customTabs = [];
+      if (!data.activeTab) data.activeTab = 'personal';
+      return data;
     }
 
     function saveDB(db) {
@@ -759,6 +1325,7 @@
     }
 
     // App State
+    let currentTab = "personal";
     let currentMonth = "2026-10";
     let activeFilter = "all";
 
@@ -908,9 +1475,12 @@
                   <span>${tx.date}</span>
                 </div>
               </div>
-              <div class="text-right flex-shrink-0 flex items-center gap-2.5">
+              <div class="text-right flex-shrink-0 flex items-center gap-2">
                 <span class="text-sm font-extrabold font-mono ${amtColor}">${sign}${formatPKR(Math.abs(tx.amount))}</span>
-                <button onclick="deleteTx(${tx.id})" class="p-1 rounded-lg text-neutral-500 hover:text-rose-400 transition">
+                <button onclick="openEditTxModal(${tx.id})" class="p-1 rounded-lg text-neutral-500 hover:text-white transition" title="Edit Card">
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="deleteTx(${tx.id})" class="p-1 rounded-lg text-neutral-500 hover:text-rose-400 transition" title="Delete">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
@@ -925,6 +1495,33 @@
     function escapeHtml(s) {
       return (s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
     }
+
+    window.openEditTxModal = function(id) {
+      const db = getDB();
+      const tx = db.transactions.find(t => t.id === id);
+      if (!tx) return;
+      document.getElementById("editTxId").value = tx.id;
+      document.getElementById("editTxDate").value = tx.date;
+      document.getElementById("editTxAmount").value = Math.abs(tx.amount);
+      document.getElementById("editTxTitle").value = tx.title;
+
+      const typeExpBtn = document.getElementById("editTypeExpenseBtn");
+      const typeIncBtn = document.getElementById("editTypeIncomeBtn");
+      const txTypeInput = document.getElementById("editTxType");
+
+      if (tx.type === 'income') {
+        txTypeInput.value = "income";
+        typeIncBtn.className = "py-2.5 text-xs font-extrabold rounded-lg text-white bg-emerald-600 shadow-sm flex items-center justify-center gap-1.5 transition";
+        typeExpBtn.className = "py-2.5 text-xs font-bold rounded-lg text-neutral-400 flex items-center justify-center gap-1.5 transition";
+      } else {
+        txTypeInput.value = "expense";
+        typeExpBtn.className = "py-2.5 text-xs font-extrabold rounded-lg text-white bg-rose-600 shadow-sm flex items-center justify-center gap-1.5 transition";
+        typeIncBtn.className = "py-2.5 text-xs font-bold rounded-lg text-neutral-400 flex items-center justify-center gap-1.5 transition";
+      }
+
+      const modal = document.getElementById("editTxModal");
+      if (modal) modal.classList.remove("hidden");
+    };
 
     window.deleteTx = function(id) {
       if (!confirm("Entry delete karni hai?")) return;
@@ -965,29 +1562,583 @@
       document.getElementById("txTitle").value = t;
     };
 
+    // ==========================================
+    // SIDEBAR & WORKSPACE NAVIGATION ENGINE
+    // ==========================================
+    function openSidebar() {
+      const drawer = document.getElementById("sidebarDrawer");
+      const backdrop = document.getElementById("sidebarBackdrop");
+      if (drawer && backdrop) {
+        drawer.classList.remove("-translate-x-full");
+        backdrop.classList.remove("hidden");
+      }
+    }
+
+    function closeSidebar() {
+      const drawer = document.getElementById("sidebarDrawer");
+      const backdrop = document.getElementById("sidebarBackdrop");
+      if (drawer && backdrop) {
+        drawer.classList.add("-translate-x-full");
+        backdrop.classList.add("hidden");
+      }
+    }
+
+    function switchTab(tabId) {
+      currentTab = tabId;
+      const db = getDB();
+      db.activeTab = tabId;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+
+      // Sidebar buttons styling
+      document.querySelectorAll(".sidebar-tab-btn").forEach(btn => {
+        if (btn.dataset.tabId === tabId) {
+          btn.className = "sidebar-tab-btn active w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-black bg-white text-black transition shadow-lg";
+          const icon = btn.querySelector("i");
+          if (icon) icon.className = "w-4 h-4 text-black stroke-[2.5]";
+        } else {
+          btn.className = "sidebar-tab-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold text-neutral-300 hover:text-white hover:bg-neutral-900 transition";
+          const icon = btn.querySelector("i");
+          if (icon) {
+            if (btn.dataset.tabId === 'personal') icon.className = "w-4 h-4 text-emerald-400";
+            else if (btn.dataset.tabId === 'business') icon.className = "w-4 h-4 text-white";
+            else if (btn.dataset.tabId === 'pending') icon.className = "w-4 h-4 text-amber-400";
+            else icon.className = "w-4 h-4 text-blue-400";
+          }
+        }
+      });
+
+      const personalView = document.getElementById("personalView");
+      const businessView = document.getElementById("businessView");
+      const pendingView = document.getElementById("pendingView");
+      const customTabView = document.getElementById("customTabView");
+      const headerTitle = document.getElementById("headerAppTitle");
+      const headerSub = document.getElementById("headerSubTitle");
+      const addBtnText = document.getElementById("openAddModalText");
+      const addBtnIcon = document.getElementById("openAddModalIcon");
+
+      if (personalView) personalView.classList.add("hidden");
+      if (businessView) businessView.classList.add("hidden");
+      if (pendingView) pendingView.classList.add("hidden");
+      if (customTabView) customTabView.classList.add("hidden");
+
+      if (tabId === 'personal') {
+        if (personalView) personalView.classList.remove("hidden");
+        if (headerTitle) headerTitle.innerHTML = `Personal Finance <span id="headerTabBadge" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700">Khaata</span>`;
+        if (headerSub) headerSub.textContent = "Easypaisa & Balance";
+        if (addBtnText) addBtnText.textContent = "+ Nayi Entry Daalein";
+        if (addBtnIcon) addBtnIcon.setAttribute("data-lucide", "plus-circle");
+        render();
+      } else if (tabId === 'business') {
+        if (businessView) businessView.classList.remove("hidden");
+        if (headerTitle) headerTitle.innerHTML = `Business Finance <span id="headerTabBadge" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-neutral-800 text-emerald-400 border border-neutral-700">Sales</span>`;
+        if (headerSub) headerSub.textContent = "Sales, Cost & Munafa (P/L)";
+        if (addBtnText) addBtnText.textContent = "+ Nayi Business Deal";
+        if (addBtnIcon) addBtnIcon.setAttribute("data-lucide", "briefcase");
+        renderBusiness();
+      } else if (tabId === 'pending') {
+        if (pendingView) pendingView.classList.remove("hidden");
+        if (headerTitle) headerTitle.innerHTML = `Pending Tasks <span id="headerTabBadge" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-neutral-800 text-amber-400 border border-neutral-700">Orders</span>`;
+        if (headerSub) headerSub.textContent = "Pending Orders & Reminders";
+        if (addBtnText) addBtnText.textContent = "+ Naya Pending Kaam";
+        if (addBtnIcon) addBtnIcon.setAttribute("data-lucide", "clock");
+        renderPending();
+      } else {
+        const cTab = (db.customTabs || []).find(t => t.id === tabId);
+        if (customTabView) customTabView.classList.remove("hidden");
+        const tabTitle = cTab ? cTab.name : "Custom Workspace";
+        if (headerTitle) headerTitle.innerHTML = `${escapeHtml(tabTitle)} <span id="headerTabBadge" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-neutral-800 text-blue-400 border border-neutral-700">Custom</span>`;
+        if (headerSub) headerSub.textContent = cTab ? (cTab.desc || "Workspace") : "Custom Workspace";
+        if (addBtnText) addBtnText.textContent = `+ Nayi Entry (${escapeHtml(tabTitle)})`;
+        if (addBtnIcon) addBtnIcon.setAttribute("data-lucide", "folder-plus");
+        renderCustomTab(tabId);
+      }
+
+      closeSidebar();
+      lucide.createIcons();
+    }
+
+    // ==========================================
+    // BUSINESS FINANCE ENGINE (Sales, Cost, P/L)
+    // ==========================================
+    let bizActiveFilter = "all";
+
+    function calculateLivePl() {
+      const cost = parseFloat(document.getElementById("bizDealCost").value) || 0;
+      const sell = parseFloat(document.getElementById("bizDealSell").value) || 0;
+      const pl = sell - cost;
+      const plText = document.getElementById("bizDealLivePlText");
+      const plBox = document.getElementById("bizDealLivePlBox");
+      if (!plText || !plBox) return;
+
+      if (cost === 0 && sell === 0) {
+        plText.textContent = "Rs. 0";
+        plText.className = "font-extrabold font-mono text-neutral-400";
+        plBox.className = "p-2.5 rounded-xl border border-neutral-800 bg-neutral-900/60 flex items-center justify-between text-xs";
+        return;
+      }
+
+      if (pl >= 0) {
+        plText.textContent = `+Rs. ${pl.toLocaleString('en-PK')} (Munafa / Profit)`;
+        plText.className = "font-extrabold font-mono text-emerald-400";
+        plBox.className = "p-2.5 rounded-xl border border-emerald-900/60 bg-emerald-950/20 flex items-center justify-between text-xs";
+      } else {
+        plText.textContent = `-Rs. ${Math.abs(pl).toLocaleString('en-PK')} (Nuqsan / Loss)`;
+        plText.className = "font-extrabold font-mono text-rose-500";
+        plBox.className = "p-2.5 rounded-xl border border-rose-900/60 bg-rose-950/20 flex items-center justify-between text-xs";
+      }
+    }
+
+    function renderBusiness() {
+      const db = getDB();
+      const allDeals = db.business_deals || [];
+
+      // Calculate totals for currently active month
+      const monthDeals = allDeals.filter(d => (d.month_key === currentMonth || (d.date && d.date.startsWith(currentMonth))));
+      const totalSell = monthDeals.reduce((a, b) => a + (Number(b.sell) || 0), 0);
+      const totalCost = monthDeals.reduce((a, b) => a + (Number(b.cost) || 0), 0);
+      const netProfit = totalSell - totalCost;
+      const totalOrders = monthDeals.length;
+
+      const totalSellElem = document.getElementById("bizStatTotalSell");
+      const totalCostElem = document.getElementById("bizStatTotalCost");
+      const ordersCountElem = document.getElementById("bizStatOrdersCount");
+      const netProfitElem = document.getElementById("bizStatNetProfit");
+      const netIcon = document.getElementById("bizProfitBadgeIcon");
+
+      if (totalSellElem) totalSellElem.textContent = `Rs. ${totalSell.toLocaleString('en-PK')}`;
+      if (totalCostElem) totalCostElem.textContent = `Rs. ${totalCost.toLocaleString('en-PK')}`;
+      if (ordersCountElem) ordersCountElem.textContent = `${totalOrders} Orders`;
+
+      if (netProfitElem) {
+        if (netProfit > 0) {
+          netProfitElem.textContent = `+Rs. ${netProfit.toLocaleString('en-PK')}`;
+          netProfitElem.className = "text-2xl font-black tracking-tight text-emerald-400";
+          if (netIcon) {
+            netIcon.className = "w-11 h-11 rounded-2xl bg-emerald-950/40 border border-emerald-800 flex items-center justify-center text-emerald-400";
+            netIcon.innerHTML = `<i data-lucide="trending-up" class="w-6 h-6 stroke-[2.5]"></i>`;
+          }
+        } else if (netProfit < 0) {
+          netProfitElem.textContent = `-Rs. ${Math.abs(netProfit).toLocaleString('en-PK')}`;
+          netProfitElem.className = "text-2xl font-black tracking-tight text-rose-500";
+          if (netIcon) {
+            netIcon.className = "w-11 h-11 rounded-2xl bg-rose-950/40 border border-rose-800 flex items-center justify-center text-rose-500";
+            netIcon.innerHTML = `<i data-lucide="trending-down" class="w-6 h-6 stroke-[2.5]"></i>`;
+          }
+        } else {
+          netProfitElem.textContent = `Rs. 0`;
+          netProfitElem.className = "text-2xl font-black tracking-tight text-white";
+          if (netIcon) {
+            netIcon.className = "w-11 h-11 rounded-2xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-neutral-400";
+            netIcon.innerHTML = `<i data-lucide="minus" class="w-6 h-6 stroke-[2.5]"></i>`;
+          }
+        }
+      }
+
+      // Filter and Search
+      const search = (document.getElementById("bizSearchInput")?.value || "").toLowerCase().trim();
+      let filtered = monthDeals.filter(d => {
+        if (bizActiveFilter === 'wp1' && d.source !== 'WP 1') return false;
+        if (bizActiveFilter === 'wp2' && d.source !== 'WP 2') return false;
+        if (bizActiveFilter === 'profit' && (Number(d.sell) - Number(d.cost)) < 0) return false;
+        if (bizActiveFilter === 'loss' && (Number(d.sell) - Number(d.cost)) >= 0) return false;
+        if (search) {
+          const matchStr = `${d.service} ${d.customer} ${d.phone || ''} ${d.provider || ''}`.toLowerCase();
+          if (!matchStr.includes(search)) return false;
+        }
+        return true;
+      });
+
+      filtered.sort((a, b) => (b.created_at || b.id) - (a.created_at || a.id));
+
+      const listContainer = document.getElementById("businessDealsList");
+      const emptyState = document.getElementById("bizEmptyState");
+      if (!listContainer) return;
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = "";
+        if (emptyState) emptyState.classList.remove("hidden");
+      } else {
+        if (emptyState) emptyState.classList.add("hidden");
+        let html = "";
+        filtered.forEach(deal => {
+          const cost = Number(deal.cost) || 0;
+          const sell = Number(deal.sell) || 0;
+          const pl = sell - cost;
+          const isProfit = pl >= 0;
+          const plFormatted = (isProfit ? "+" : "-") + "Rs. " + Math.abs(pl).toLocaleString('en-PK');
+          const plColor = isProfit ? "text-emerald-400" : "text-rose-500";
+
+          let sourceBadge = "";
+          if (deal.source === 'WP 1') {
+            sourceBadge = `<span class="text-[9px] px-2 py-0.5 rounded-md bg-blue-950 text-blue-400 border border-blue-800 font-extrabold">WP 1</span>`;
+          } else if (deal.source === 'WP 2') {
+            sourceBadge = `<span class="text-[9px] px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-400 border border-emerald-800 font-extrabold">WP 2</span>`;
+          } else {
+            sourceBadge = `<span class="text-[9px] px-2 py-0.5 rounded-md bg-neutral-800 text-neutral-300 border border-neutral-700 font-bold">${escapeHtml(deal.source || 'Direct')}</span>`;
+          }
+
+          const phoneClean = (deal.phone || '').replace(/[^0-9]/g, '');
+          const phoneLink = phoneClean ? `https://wa.me/${phoneClean.startsWith('0') ? '92' + phoneClean.slice(1) : phoneClean}` : '';
+
+          html += `
+            <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3.5 space-y-2.5 shadow-sm hover:border-neutral-700 transition">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="font-extrabold text-xs text-white truncate">${escapeHtml(deal.service)}</span>
+                  ${sourceBadge}
+                </div>
+                <span class="text-[10px] text-neutral-500 font-mono flex-shrink-0">${deal.date || ''}</span>
+              </div>
+
+              <div class="flex items-center justify-between text-[11px] text-neutral-400 pt-0.5 border-t border-neutral-800/60">
+                <div class="flex items-center gap-2 truncate">
+                  <span class="font-bold text-neutral-200 truncate"><i data-lucide="user" class="w-3 h-3 inline text-neutral-500 mr-1"></i>${escapeHtml(deal.customer)}</span>
+                  ${deal.phone ? `
+                    <a href="${phoneLink || ('tel:' + deal.phone)}" target="_blank" class="text-[10px] text-emerald-400 hover:underline font-mono flex items-center gap-0.5">
+                      <i data-lucide="phone" class="w-2.5 h-2.5 inline"></i> ${escapeHtml(deal.phone)}
+                    </a>
+                  ` : ''}
+                </div>
+                <div class="text-[10px] text-neutral-500 truncate font-mono">
+                  From: <span class="text-neutral-300">${escapeHtml(deal.provider || 'Direct')}</span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between pt-1.5 border-t border-neutral-800/60">
+                <div class="flex items-center gap-3 text-xs font-mono">
+                  <span class="text-neutral-400 text-[11px]">Cost: <strong class="text-neutral-300">Rs. ${cost.toLocaleString()}</strong></span>
+                  <span class="text-neutral-400 text-[11px]">Sell: <strong class="text-white">Rs. ${sell.toLocaleString()}</strong></span>
+                  <span class="text-[11px] font-black ${plColor}">P/L: ${plFormatted}</span>
+                </div>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                  <button onclick="openEditBizDealModal(${deal.id})" class="p-1.5 rounded-lg text-neutral-400 hover:text-white bg-neutral-800/80 hover:bg-neutral-700 transition" title="Edit Deal">
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button onclick="deleteBizDeal(${deal.id})" class="p-1.5 rounded-lg text-neutral-400 hover:text-rose-400 bg-neutral-800/80 hover:bg-neutral-700 transition" title="Delete Deal">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        listContainer.innerHTML = html;
+      }
+      lucide.createIcons();
+    }
+
+    window.openEditBizDealModal = function(id) {
+      const db = getDB();
+      const deal = (db.business_deals || []).find(d => d.id === id);
+      if (!deal) return;
+      document.getElementById("bizDealModalTitle").innerHTML = `<i data-lucide="edit-3" class="w-4 h-4 text-emerald-400"></i> Deal Edit Karein`;
+      document.getElementById("bizDealId").value = deal.id;
+      document.getElementById("bizDealDate").value = deal.date;
+      document.getElementById("bizDealService").value = deal.service;
+      document.getElementById("bizDealCost").value = deal.cost;
+      document.getElementById("bizDealSell").value = deal.sell;
+      document.getElementById("bizDealCustomer").value = deal.customer;
+      document.getElementById("bizDealPhone").value = deal.phone || '';
+      document.getElementById("bizDealSource").value = deal.source || 'WP 1';
+      document.getElementById("bizDealProvider").value = deal.provider;
+      document.getElementById("deleteBizDealModalBtn").classList.remove("hidden");
+      calculateLivePl();
+
+      const modal = document.getElementById("businessDealModal");
+      if (modal) modal.classList.remove("hidden");
+      lucide.createIcons();
+    };
+
+    window.deleteBizDeal = function(id) {
+      if (!confirm("Yeh business deal delete karni hai?")) return;
+      const db = getDB();
+      db.business_deals = (db.business_deals || []).filter(d => d.id !== id);
+      saveDB(db);
+      showToast("Deal delete ho gayi");
+      renderBusiness();
+      const modal = document.getElementById("businessDealModal");
+      if (modal) modal.classList.add("hidden");
+    };
+
+    // ==========================================
+    // PENDING TASKS & ORDERS ENGINE
+    // ==========================================
+    let pendingActiveFilter = "all";
+
+    function renderPending() {
+      const db = getDB();
+      const allTasks = db.pending_tasks || [];
+
+      const pendingCount = allTasks.filter(t => t.status === 'pending').length;
+      const doneCount = allTasks.filter(t => t.status === 'done').length;
+
+      const pCountElem = document.getElementById("pendingStatCount");
+      const dCountElem = document.getElementById("doneStatCount");
+      const sidebarBadge = document.getElementById("sidebarPendingCountBadge");
+
+      if (pCountElem) pCountElem.textContent = pendingCount;
+      if (dCountElem) dCountElem.textContent = doneCount;
+      if (sidebarBadge) sidebarBadge.textContent = pendingCount;
+
+      const search = (document.getElementById("pendingSearchInput")?.value || "").toLowerCase().trim();
+      let filtered = allTasks.filter(t => {
+        if (pendingActiveFilter === 'pending' && t.status !== 'pending') return false;
+        if (pendingActiveFilter === 'done' && t.status !== 'done') return false;
+        if (search) {
+          const matchStr = `${t.customer} ${t.service} ${t.manager || ''} ${t.link || ''} ${t.provider || ''} ${t.reminder || ''}`.toLowerCase();
+          if (!matchStr.includes(search)) return false;
+        }
+        return true;
+      });
+
+      filtered.sort((a, b) => {
+        if (a.status === 'pending' && b.status === 'done') return -1;
+        if (a.status === 'done' && b.status === 'pending') return 1;
+        return (b.created_at || b.id) - (a.created_at || a.id);
+      });
+
+      const listContainer = document.getElementById("pendingTasksList");
+      const emptyState = document.getElementById("pendingEmptyState");
+      if (!listContainer) return;
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = "";
+        if (emptyState) emptyState.classList.remove("hidden");
+      } else {
+        if (emptyState) emptyState.classList.add("hidden");
+        let html = "";
+        filtered.forEach(task => {
+          const isDone = task.status === 'done';
+          const statusBadge = isDone 
+            ? `<span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 font-extrabold flex items-center gap-1">Done ✅</span>`
+            : `<span class="text-[9px] px-2 py-0.5 rounded-full bg-amber-950 text-amber-400 border border-amber-800 font-extrabold flex items-center gap-1">Pending ⏳</span>`;
+
+          html += `
+            <div class="bg-neutral-900/90 border border-neutral-800 rounded-2xl p-3.5 space-y-2.5 shadow-sm hover:border-neutral-700 transition ${isDone ? 'opacity-70' : ''}">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-start gap-2.5 min-w-0">
+                  <button type="button" onclick="toggleTaskStatus(${task.id})" class="mt-0.5 w-5 h-5 rounded-lg border ${isDone ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-neutral-950 border-neutral-700 text-transparent hover:border-white'} flex items-center justify-center transition active:scale-90" title="Click to change Status">
+                    <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
+                  </button>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <span class="font-extrabold text-xs ${isDone ? 'line-through text-neutral-400' : 'text-white'} truncate">${escapeHtml(task.customer)}</span>
+                      <span class="text-[10px] text-neutral-400 font-semibold truncate">&bull; ${escapeHtml(task.service)}</span>
+                    </div>
+                    <div class="flex items-center gap-2 mt-1 text-[10px] text-neutral-500 font-mono">
+                      <span>Manager: <strong class="text-neutral-300">${escapeHtml(task.manager || 'Arhum')}</strong></span>
+                      ${task.quantity ? `<span>&bull; Qty: <strong class="text-neutral-200">${escapeHtml(task.quantity)}</strong></span>` : ''}
+                    </div>
+                  </div>
+                </div>
+                ${statusBadge}
+              </div>
+
+              <div class="flex items-center justify-between text-[11px] text-neutral-400 pt-1 border-t border-neutral-800/60">
+                <div class="text-[10px] font-mono text-neutral-400">
+                  Provider: <span class="text-neutral-200">${escapeHtml(task.provider || 'Direct')}</span>
+                </div>
+                ${task.link ? `
+                  <a href="${escapeHtml(task.link)}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-blue-400 hover:underline font-mono flex items-center gap-1 bg-blue-950/40 px-2 py-0.5 rounded border border-blue-900/50">
+                    <i data-lucide="external-link" class="w-3 h-3"></i> Link Kholein
+                  </a>
+                ` : ''}
+              </div>
+
+              ${task.reminder ? `
+                <div class="p-2 rounded-xl bg-black/60 border border-neutral-800/80 text-[10.5px] text-amber-300/90 flex items-center gap-1.5 font-medium">
+                  <i data-lucide="bell" class="w-3 h-3 text-amber-400 flex-shrink-0"></i>
+                  <span class="truncate">${escapeHtml(task.reminder)}</span>
+                </div>
+              ` : ''}
+
+              <div class="flex items-center justify-end gap-1.5 pt-0.5">
+                <button onclick="openEditPendingTaskModal(${task.id})" class="p-1.5 rounded-lg text-neutral-400 hover:text-white bg-neutral-800/80 hover:bg-neutral-700 transition" title="Edit Task">
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="deletePendingTask(${task.id})" class="p-1.5 rounded-lg text-neutral-400 hover:text-rose-400 bg-neutral-800/80 hover:bg-neutral-700 transition" title="Delete Task">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          `;
+        });
+        listContainer.innerHTML = html;
+      }
+      lucide.createIcons();
+    }
+
+    window.toggleTaskStatus = function(id) {
+      const db = getDB();
+      const task = (db.pending_tasks || []).find(t => t.id === id);
+      if (!task) return;
+      task.status = task.status === 'pending' ? 'done' : 'pending';
+      saveDB(db);
+      showToast(task.status === 'done' ? "Task Mukammal Ho Gaya! ✅" : "Task Pending Kar Diya Gaya ⏳");
+      renderPending();
+    };
+
+    window.openEditPendingTaskModal = function(id) {
+      const db = getDB();
+      const task = (db.pending_tasks || []).find(t => t.id === id);
+      if (!task) return;
+      document.getElementById("pendingTaskModalTitle").innerHTML = `<i data-lucide="edit-3" class="w-4 h-4 text-amber-400"></i> Task Edit Karein`;
+      document.getElementById("pendingTaskId").value = task.id;
+      document.getElementById("pendingTaskCustomer").value = task.customer;
+      document.getElementById("pendingTaskService").value = task.service;
+      document.getElementById("pendingTaskManager").value = task.manager || '';
+      document.getElementById("pendingTaskQty").value = task.quantity || '';
+      document.getElementById("pendingTaskLink").value = task.link || '';
+      document.getElementById("pendingTaskProvider").value = task.provider || '';
+      document.getElementById("pendingTaskStatus").value = task.status || 'pending';
+      document.getElementById("pendingTaskReminder").value = task.reminder || '';
+      document.getElementById("deletePendingTaskModalBtn").classList.remove("hidden");
+
+      const modal = document.getElementById("pendingTaskModal");
+      if (modal) modal.classList.remove("hidden");
+      lucide.createIcons();
+    };
+
+    window.deletePendingTask = function(id) {
+      if (!confirm("Yeh task delete karna hai?")) return;
+      const db = getDB();
+      db.pending_tasks = (db.pending_tasks || []).filter(t => t.id !== id);
+      saveDB(db);
+      showToast("Task delete ho gaya");
+      renderPending();
+      const modal = document.getElementById("pendingTaskModal");
+      if (modal) modal.classList.add("hidden");
+    };
+
+    // ==========================================
+    // CUSTOM WORKSPACES ENGINE
+    // ==========================================
+    function renderCustomTabsList() {
+      const db = getDB();
+      const container = document.getElementById("dynamicCustomTabsContainer");
+      if (!container) return;
+      let html = "";
+      (db.customTabs || []).forEach(tab => {
+        html += `
+          <button type="button" data-tab-id="${tab.id}" class="sidebar-tab-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition">
+            <span class="flex items-center gap-2.5">
+              <i data-lucide="folder" class="w-4 h-4 text-blue-400"></i>
+              <span>${escapeHtml(tab.name)}</span>
+            </span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-neutral-800 text-neutral-400 font-mono">${escapeHtml(tab.desc || 'Tab')}</span>
+          </button>
+        `;
+      });
+      container.innerHTML = html;
+      lucide.createIcons();
+
+      container.querySelectorAll(".sidebar-tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => switchTab(btn.dataset.tabId));
+      });
+    }
+
+    function renderCustomTab(tabId) {
+      const db = getDB();
+      const tab = (db.customTabs || []).find(t => t.id === tabId);
+      if (!tab) return;
+      const tElem = document.getElementById("customTabTitleDisplay");
+      const dElem = document.getElementById("customTabSubtitleDisplay");
+      if (tElem) tElem.textContent = tab.name;
+      if (dElem) dElem.textContent = tab.desc || "Custom Workspace";
+    }
+
     // Event Listeners
     document.addEventListener("DOMContentLoaded", () => {
       lucide.createIcons();
       document.getElementById("txDate").value = new Date().toISOString().split("T")[0];
       renderSuggestions("expense");
-      render();
+      
+      // Initialize dynamic custom tabs in sidebar
+      renderCustomTabsList();
+
+      // Initialize Active Tab from DB or default to 'personal'
+      const initTab = (getDB().activeTab) || 'personal';
+      switchTab(initTab);
+
+      // Sidebar Open / Close
+      const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
+      const closeSidebarBtn = document.getElementById("closeSidebarBtn");
+      const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+
+      if (toggleSidebarBtn) toggleSidebarBtn.addEventListener("click", openSidebar);
+      if (closeSidebarBtn) closeSidebarBtn.addEventListener("click", closeSidebar);
+      if (sidebarBackdrop) sidebarBackdrop.addEventListener("click", closeSidebar);
+
+      // Sidebar Tab Clicks
+      document.querySelectorAll(".sidebar-tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (btn.dataset.tabId) switchTab(btn.dataset.tabId);
+        });
+      });
+
+      // Create Custom Workspace Tab
+      const createTabModal = document.getElementById("createTabModal");
+      const openCreateTabBtn = document.getElementById("openCreateTabBtn");
+      const closeCreateTabModalBtn = document.getElementById("closeCreateTabModalBtn");
+      const cancelCreateTabBtn = document.getElementById("cancelCreateTabBtn");
+      const saveNewTabBtn = document.getElementById("saveNewTabBtn");
+      const newTabNameInput = document.getElementById("newTabNameInput");
+      const newTabDescInput = document.getElementById("newTabDescInput");
+
+      if (openCreateTabBtn) {
+        openCreateTabBtn.addEventListener("click", () => {
+          if (newTabNameInput) newTabNameInput.value = "";
+          if (newTabDescInput) newTabDescInput.value = "";
+          if (createTabModal) createTabModal.classList.remove("hidden");
+          setTimeout(() => { if (newTabNameInput) newTabNameInput.focus(); }, 100);
+        });
+      }
+      if (closeCreateTabModalBtn) closeCreateTabModalBtn.addEventListener("click", () => createTabModal.classList.add("hidden"));
+      if (cancelCreateTabBtn) cancelCreateTabBtn.addEventListener("click", () => createTabModal.classList.add("hidden"));
+
+      if (saveNewTabBtn) {
+        saveNewTabBtn.addEventListener("click", () => {
+          const name = (newTabNameInput ? newTabNameInput.value : "").trim();
+          const desc = (newTabDescInput ? newTabDescInput.value : "").trim();
+          if (!name) {
+            alert("Tab ka naam daalna zaroori hai!");
+            return;
+          }
+          const db = getDB();
+          if (!db.customTabs) db.customTabs = [];
+          const newTabId = "tab_" + Date.now();
+          db.customTabs.push({
+            id: newTabId,
+            name: name,
+            desc: desc || "Custom Workspace",
+            created_at: Date.now()
+          });
+          saveDB(db);
+          renderCustomTabsList();
+          createTabModal.classList.add("hidden");
+          showToast(`"${name}" tab ban gaya!`);
+          switchTab(newTabId);
+        });
+      }
 
       // Month Switchers
       document.getElementById("prevMonthBtn").addEventListener("click", () => {
         let [y, m] = currentMonth.split("-").map(Number);
         m -= 1; if (m === 0) { m = 12; y -= 1; }
         currentMonth = `${y}-${String(m).padStart(2, '0')}`;
-        render();
+        if (currentTab === 'business') renderBusiness();
+        else render();
       });
 
       document.getElementById("nextMonthBtn").addEventListener("click", () => {
         let [y, m] = currentMonth.split("-").map(Number);
         m += 1; if (m === 13) { m = 1; y += 1; }
         currentMonth = `${y}-${String(m).padStart(2, '0')}`;
-        render();
+        if (currentTab === 'business') renderBusiness();
+        else render();
       });
 
-      // Filter Tabs
+      // Personal Finance Filter Tabs
       const fAll = document.getElementById("filterAllBtn");
       const fInc = document.getElementById("filterIncomeBtn");
       const fExp = document.getElementById("filterExpenseBtn");
@@ -1018,16 +2169,41 @@
 
       document.getElementById("searchInput").addEventListener("input", render);
 
-      // Add Modal
+      // Bottom Floating Button (+ Naya / Nayi Entry)
       const txModal = document.getElementById("transactionModal");
+      const bizModal = document.getElementById("businessDealModal");
+      const pendingModal = document.getElementById("pendingTaskModal");
+
       document.getElementById("openAddModalBtn").addEventListener("click", () => {
-        document.getElementById("transactionForm").reset();
-        document.getElementById("txDate").value = new Date().toISOString().split("T")[0];
-        document.getElementById("typeExpenseBtn").click();
-        txModal.classList.remove("hidden");
+        if (currentTab === 'personal') {
+          document.getElementById("transactionForm").reset();
+          document.getElementById("txDate").value = new Date().toISOString().split("T")[0];
+          document.getElementById("typeExpenseBtn").click();
+          txModal.classList.remove("hidden");
+        } else if (currentTab === 'business') {
+          document.getElementById("businessDealForm").reset();
+          document.getElementById("bizDealId").value = "";
+          document.getElementById("bizDealModalTitle").innerHTML = `<i data-lucide="briefcase" class="w-4 h-4 text-emerald-400"></i> Nayi Business Deal`;
+          document.getElementById("bizDealDate").value = new Date().toISOString().split("T")[0];
+          document.getElementById("deleteBizDealModalBtn").classList.add("hidden");
+          calculateLivePl();
+          bizModal.classList.remove("hidden");
+          lucide.createIcons();
+        } else if (currentTab === 'pending') {
+          document.getElementById("pendingTaskForm").reset();
+          document.getElementById("pendingTaskId").value = "";
+          document.getElementById("pendingTaskModalTitle").innerHTML = `<i data-lucide="clock" class="w-4 h-4 text-amber-400"></i> Naya Pending Kaam`;
+          document.getElementById("deletePendingTaskModalBtn").classList.add("hidden");
+          pendingModal.classList.remove("hidden");
+          lucide.createIcons();
+        } else {
+          showToast("Is custom workspace mein entry add karein");
+        }
       });
+
       document.getElementById("closeModalBtn").addEventListener("click", () => txModal.classList.add("hidden"));
 
+      // Personal Finance Type Toggle
       const typeExpBtn = document.getElementById("typeExpenseBtn");
       const typeIncBtn = document.getElementById("typeIncomeBtn");
       const txTypeInput = document.getElementById("txType");
@@ -1046,6 +2222,7 @@
         renderSuggestions("income");
       });
 
+      // Save Personal Finance Entry
       document.getElementById("transactionForm").addEventListener("submit", (e) => {
         e.preventDefault();
         const db = getDB();
@@ -1065,6 +2242,263 @@
         currentMonth = entry.month_key;
         render();
       });
+
+      // Personal Finance Edit Entry Form
+      const editTxModal = document.getElementById("editTxModal");
+      const closeEditTxModalBtn = document.getElementById("closeEditTxModalBtn");
+      const editTypeExpBtn = document.getElementById("editTypeExpenseBtn");
+      const editTypeIncBtn = document.getElementById("editTypeIncomeBtn");
+      const editTxTypeInput = document.getElementById("editTxType");
+      const editTxForm = document.getElementById("editTxForm");
+      const deleteFromEditTxBtn = document.getElementById("deleteFromEditTxBtn");
+
+      if (closeEditTxModalBtn) closeEditTxModalBtn.addEventListener("click", () => editTxModal.classList.add("hidden"));
+
+      if (editTypeExpBtn && editTypeIncBtn) {
+        editTypeExpBtn.addEventListener("click", () => {
+          editTxTypeInput.value = "expense";
+          editTypeExpBtn.className = "py-2.5 text-xs font-extrabold rounded-lg text-white bg-rose-600 shadow-sm flex items-center justify-center gap-1.5 transition";
+          editTypeIncBtn.className = "py-2.5 text-xs font-bold rounded-lg text-neutral-400 flex items-center justify-center gap-1.5 transition";
+        });
+        editTypeIncBtn.addEventListener("click", () => {
+          editTxTypeInput.value = "income";
+          editTypeIncBtn.className = "py-2.5 text-xs font-extrabold rounded-lg text-white bg-emerald-600 shadow-sm flex items-center justify-center gap-1.5 transition";
+          editTypeExpBtn.className = "py-2.5 text-xs font-bold rounded-lg text-neutral-400 flex items-center justify-center gap-1.5 transition";
+        });
+      }
+
+      if (editTxForm) {
+        editTxForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const id = Number(document.getElementById("editTxId").value);
+          const db = getDB();
+          const tx = db.transactions.find(t => t.id === id);
+          if (!tx) return;
+
+          const dateVal = document.getElementById("editTxDate").value;
+          tx.date = dateVal;
+          tx.month_key = dateVal.slice(0, 7);
+          tx.type = editTxTypeInput.value;
+          tx.amount = parseFloat(document.getElementById("editTxAmount").value);
+          tx.title = document.getElementById("editTxTitle").value.trim();
+
+          saveDB(db);
+          editTxModal.classList.add("hidden");
+          showToast("Entry update ho gayi!");
+          currentMonth = tx.month_key;
+          render();
+        });
+      }
+
+      if (deleteFromEditTxBtn) {
+        deleteFromEditTxBtn.addEventListener("click", () => {
+          const id = Number(document.getElementById("editTxId").value);
+          deleteTx(id);
+          editTxModal.classList.add("hidden");
+        });
+      }
+
+      // ==========================================
+      // BUSINESS DEALS CONTROLS & LISTENERS
+      // ==========================================
+      const closeBizDealModalBtn = document.getElementById("closeBizDealModalBtn");
+      const businessDealForm = document.getElementById("businessDealForm");
+      const deleteBizDealModalBtn = document.getElementById("deleteBizDealModalBtn");
+      const bizCostInput = document.getElementById("bizDealCost");
+      const bizSellInput = document.getElementById("bizDealSell");
+      const bizDateInput = document.getElementById("bizDealDate");
+      const bizDatePrevBtn = document.getElementById("bizDatePrevBtn");
+      const bizDateNextBtn = document.getElementById("bizDateNextBtn");
+      const bizDateTodayBtn = document.getElementById("bizDateTodayBtn");
+
+      if (closeBizDealModalBtn) closeBizDealModalBtn.addEventListener("click", () => bizModal.classList.add("hidden"));
+
+      if (bizCostInput) bizCostInput.addEventListener("input", calculateLivePl);
+      if (bizSellInput) bizSellInput.addEventListener("input", calculateLivePl);
+
+      // Date Steppers
+      if (bizDatePrevBtn) {
+        bizDatePrevBtn.addEventListener("click", () => {
+          const cur = bizDateInput.value ? new Date(bizDateInput.value) : new Date();
+          cur.setDate(cur.getDate() - 1);
+          bizDateInput.value = cur.toISOString().split("T")[0];
+        });
+      }
+      if (bizDateNextBtn) {
+        bizDateNextBtn.addEventListener("click", () => {
+          const cur = bizDateInput.value ? new Date(bizDateInput.value) : new Date();
+          cur.setDate(cur.getDate() + 1);
+          bizDateInput.value = cur.toISOString().split("T")[0];
+        });
+      }
+      if (bizDateTodayBtn) {
+        bizDateTodayBtn.addEventListener("click", () => {
+          bizDateInput.value = new Date().toISOString().split("T")[0];
+        });
+      }
+
+      // Save Business Deal
+      if (businessDealForm) {
+        businessDealForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const db = getDB();
+          if (!db.business_deals) db.business_deals = [];
+
+          const existingId = document.getElementById("bizDealId").value;
+          const dateVal = bizDateInput.value || new Date().toISOString().split("T")[0];
+          const costVal = parseFloat(bizCostInput.value) || 0;
+          const sellVal = parseFloat(bizSellInput.value) || 0;
+          const plVal = sellVal - costVal;
+
+          if (existingId) {
+            // Edit existing
+            const deal = db.business_deals.find(d => d.id === Number(existingId));
+            if (deal) {
+              deal.date = dateVal;
+              deal.month_key = dateVal.slice(0, 7);
+              deal.service = document.getElementById("bizDealService").value.trim();
+              deal.cost = costVal;
+              deal.sell = sellVal;
+              deal.pl = plVal;
+              deal.customer = document.getElementById("bizDealCustomer").value.trim();
+              deal.phone = document.getElementById("bizDealPhone").value.trim();
+              deal.source = document.getElementById("bizDealSource").value;
+              deal.provider = document.getElementById("bizDealProvider").value.trim();
+            }
+            showToast("Deal update ho gayi!");
+          } else {
+            // Create new
+            const newDeal = {
+              id: Date.now(),
+              date: dateVal,
+              month_key: dateVal.slice(0, 7),
+              service: document.getElementById("bizDealService").value.trim(),
+              cost: costVal,
+              sell: sellVal,
+              pl: plVal,
+              customer: document.getElementById("bizDealCustomer").value.trim(),
+              phone: document.getElementById("bizDealPhone").value.trim(),
+              source: document.getElementById("bizDealSource").value,
+              provider: document.getElementById("bizDealProvider").value.trim(),
+              created_at: Date.now()
+            };
+            db.business_deals.push(newDeal);
+            currentMonth = newDeal.month_key;
+            showToast("Deal save ho gayi! 🎉");
+          }
+
+          saveDB(db);
+          bizModal.classList.add("hidden");
+          renderBusiness();
+        });
+      }
+
+      if (deleteBizDealModalBtn) {
+        deleteBizDealModalBtn.addEventListener("click", () => {
+          const id = Number(document.getElementById("bizDealId").value);
+          if (id) deleteBizDeal(id);
+        });
+      }
+
+      // Business Filter Buttons
+      document.querySelectorAll(".biz-filter-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".biz-filter-btn").forEach(b => {
+            b.className = "biz-filter-btn text-[10px] font-bold px-3 py-1.5 rounded-lg bg-neutral-900 text-neutral-300 border border-neutral-800 hover:text-white transition";
+          });
+          btn.className = "biz-filter-btn active text-[10px] font-extrabold px-3 py-1.5 rounded-lg bg-white text-black transition shadow-sm";
+          bizActiveFilter = btn.dataset.bizFilter;
+          renderBusiness();
+        });
+      });
+
+      const bizSearchInput = document.getElementById("bizSearchInput");
+      if (bizSearchInput) bizSearchInput.addEventListener("input", renderBusiness);
+
+      // ==========================================
+      // PENDING TASKS CONTROLS & LISTENERS
+      // ==========================================
+      const closePendingTaskModalBtn = document.getElementById("closePendingTaskModalBtn");
+      const pendingTaskForm = document.getElementById("pendingTaskForm");
+      const deletePendingTaskModalBtn = document.getElementById("deletePendingTaskModalBtn");
+
+      if (closePendingTaskModalBtn) closePendingTaskModalBtn.addEventListener("click", () => pendingModal.classList.add("hidden"));
+
+      // Save Pending Task
+      if (pendingTaskForm) {
+        pendingTaskForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const db = getDB();
+          if (!db.pending_tasks) db.pending_tasks = [];
+
+          const existingId = document.getElementById("pendingTaskId").value;
+          const customerVal = document.getElementById("pendingTaskCustomer").value.trim();
+          const serviceVal = document.getElementById("pendingTaskService").value.trim();
+          const managerVal = document.getElementById("pendingTaskManager").value.trim();
+          const qtyVal = document.getElementById("pendingTaskQty").value.trim();
+          const linkVal = document.getElementById("pendingTaskLink").value.trim();
+          const providerVal = document.getElementById("pendingTaskProvider").value.trim();
+          const statusVal = document.getElementById("pendingTaskStatus").value;
+          const reminderVal = document.getElementById("pendingTaskReminder").value.trim();
+
+          if (existingId) {
+            const task = db.pending_tasks.find(t => t.id === Number(existingId));
+            if (task) {
+              task.customer = customerVal;
+              task.service = serviceVal;
+              task.manager = managerVal;
+              task.quantity = qtyVal;
+              task.link = linkVal;
+              task.provider = providerVal;
+              task.status = statusVal;
+              task.reminder = reminderVal;
+            }
+            showToast("Task update ho gaya!");
+          } else {
+            const newTask = {
+              id: Date.now(),
+              customer: customerVal,
+              service: serviceVal,
+              manager: managerVal,
+              quantity: qtyVal,
+              link: linkVal,
+              provider: providerVal,
+              status: statusVal,
+              reminder: reminderVal,
+              created_at: Date.now()
+            };
+            db.pending_tasks.push(newTask);
+            showToast("Pending task save ho gaya! ⏳");
+          }
+
+          saveDB(db);
+          pendingModal.classList.add("hidden");
+          renderPending();
+        });
+      }
+
+      if (deletePendingTaskModalBtn) {
+        deletePendingTaskModalBtn.addEventListener("click", () => {
+          const id = Number(document.getElementById("pendingTaskId").value);
+          if (id) deletePendingTask(id);
+        });
+      }
+
+      // Pending Filter Buttons
+      document.querySelectorAll(".pending-tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".pending-tab-btn").forEach(b => {
+            b.className = "pending-tab-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-neutral-400 hover:text-white transition";
+          });
+          btn.className = "pending-tab-btn active flex-1 py-1.5 text-[11px] font-extrabold rounded-lg text-black bg-white transition shadow-sm";
+          pendingActiveFilter = btn.dataset.pendingFilter;
+          renderPending();
+        });
+      });
+
+      const pendingSearchInput = document.getElementById("pendingSearchInput");
+      if (pendingSearchInput) pendingSearchInput.addEventListener("input", renderPending);
+
 
       // Starting Balance Modal
       const sbModal = document.getElementById("startBalanceModal");
