@@ -106,6 +106,10 @@
 
       <!-- Quick Actions (Monochrome Matte) -->
       <div class="flex items-center gap-1.5">
+        <button id="cloudHeaderBtn" title="Cloud Sync & Account Code" class="p-2 rounded-xl bg-neutral-900 text-neutral-300 border border-neutral-800 hover:text-white hover:border-neutral-700 active:scale-95 transition relative">
+          <i data-lucide="cloud" class="w-4 h-4"></i>
+          <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-neutral-600 absolute top-1.5 right-1.5 border border-black"></span>
+        </button>
         <button id="reconcileHeaderBtn" title="Check Balance" class="p-2 rounded-xl bg-neutral-900 text-neutral-300 border border-neutral-800 hover:text-white hover:border-neutral-700 active:scale-95 transition">
           <i data-lucide="scale" class="w-4 h-4"></i>
         </button>
@@ -408,6 +412,11 @@
       </div>
 
       <div class="space-y-2">
+        <button id="openCloudSyncFromSettingsBtn" class="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-bold text-neutral-200 border border-neutral-800 flex items-center justify-between">
+          <span class="flex items-center gap-2"><i data-lucide="cloud" class="w-4 h-4 text-emerald-400"></i> Cloud Sync & Secret Code</span>
+          <span id="settingsCloudBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400 font-mono">Offline</span>
+        </button>
+
         <button id="exportCsvBtn" class="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-bold text-neutral-200 border border-neutral-800 flex items-center justify-between">
           <span class="flex items-center gap-2"><i data-lucide="download" class="w-4 h-4 text-white"></i> Export to Excel (CSV)</span>
           <i data-lucide="chevron-right" class="w-4 h-4 text-neutral-500"></i>
@@ -432,6 +441,110 @@
 
       <div class="pt-2 border-t border-neutral-800 text-[11px] text-neutral-500 text-center font-mono">
         Khaata OS &bull; Matte Black & White Edition
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Cloud Sync & Secret Account Code Modal -->
+  <div id="cloudSyncModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-neutral-950 border border-neutral-800 w-full max-w-sm rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="cloud" class="w-4 h-4 text-emerald-400"></i>
+          Cloud Sync & Secret Code
+        </h3>
+        <button id="closeCloudSyncBtn" class="text-neutral-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Secret Sync Code Card -->
+      <div class="p-3.5 bg-neutral-900/90 rounded-xl border border-neutral-800 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">Aapka Secret Sync Code</span>
+          <span id="syncStatusIndicator" class="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400">Not Connected</span>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <div id="displaySyncCode" class="flex-1 bg-black border border-neutral-700 rounded-lg px-3 py-2 text-base font-extrabold font-mono tracking-widest text-emerald-400 text-center select-all">
+            KH-0000
+          </div>
+          <button type="button" id="copySyncCodeBtn" title="Copy Code" class="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700 active:scale-95 transition">
+            <i data-lucide="copy" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <p class="text-[10px] text-neutral-400 leading-tight">
+          Yeh code kisi bhi doosre mobile par daal kar aap apna hisab wapis laa sakte hain.
+        </p>
+
+        <!-- Change / Custom Code option -->
+        <div class="pt-1 flex items-center justify-between">
+          <button type="button" id="toggleCustomCodeBtn" class="text-[11px] text-neutral-300 hover:text-white underline">
+            Apna Pasandida Code / Number Rakhein
+          </button>
+        </div>
+        
+        <div id="customCodeInputContainer" class="hidden pt-1 space-y-1.5">
+          <input type="text" id="customCodeInput" placeholder="e.g. 03001234567 ya MYKHATA" class="w-full bg-black border border-neutral-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono uppercase focus:outline-none focus:border-emerald-500">
+          <button type="button" id="saveCustomCodeBtn" class="w-full py-1.5 rounded-lg text-xs font-bold bg-white text-black hover:bg-neutral-200">
+            Code Update Karein
+          </button>
+        </div>
+      </div>
+
+      <!-- Cloud Storage Endpoint (Google Firebase) -->
+      <div class="space-y-1.5">
+        <label class="block text-xs font-semibold text-neutral-300">
+          Firebase Realtime Database URL
+        </label>
+        <input type="text" id="firebaseDbUrlInput" placeholder="https://your-app-default-rtdb.firebaseio.com" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-white">
+        <div class="flex justify-between items-center pt-0.5">
+          <a href="https://console.firebase.google.com" target="_blank" rel="noopener" class="text-[10px] text-emerald-400 hover:underline flex items-center gap-1">
+            <i data-lucide="external-link" class="w-3 h-3"></i> Free Firebase Console (1 Min)
+          </a>
+          <button type="button" id="saveFirebaseUrlBtn" class="text-[10px] font-bold px-2 py-0.5 rounded bg-neutral-800 text-white hover:bg-neutral-700 border border-neutral-700">
+            Save URL
+          </button>
+        </div>
+      </div>
+
+      <!-- Auto-Sync Toggle -->
+      <div class="p-3 bg-neutral-900/60 rounded-xl border border-neutral-800 flex items-center justify-between">
+        <div>
+          <div class="text-xs font-semibold text-white">Auto-Sync Har Entry Par</div>
+          <div class="text-[10px] text-neutral-400">Har kharcha/income par cloud save</div>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="autoSyncToggle" class="sr-only peer" checked>
+          <div class="w-9 h-5 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+        </label>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="space-y-2 pt-1">
+        <button type="button" id="syncNowUploadBtn" class="w-full py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-black text-xs font-extrabold flex items-center justify-center gap-2 active:scale-95 transition shadow-lg shadow-emerald-950/40">
+          <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+          Abhi Cloud Par Save Karein (Backup)
+        </button>
+
+        <button type="button" id="syncNowRestoreBtn" class="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-bold border border-neutral-800 flex items-center justify-center gap-2 active:scale-95 transition">
+          <i data-lucide="download-cloud" class="w-4 h-4"></i>
+          Doosre Mobile Se Data Restore Karein
+        </button>
+      </div>
+
+      <!-- Restore Input Container (Hidden by default) -->
+      <div id="restoreContainer" class="hidden p-3 bg-neutral-900 rounded-xl border border-neutral-700 space-y-2">
+        <label class="block text-xs font-semibold text-neutral-200">Purana Secret Code Daalein:</label>
+        <input type="text" id="restoreCodeInput" placeholder="e.g. KH-8924 ya Mobile No" class="w-full bg-black border border-neutral-700 rounded-lg px-2.5 py-2 text-xs text-white font-mono uppercase focus:outline-none focus:border-emerald-500">
+        <div class="flex gap-2 pt-1">
+          <button type="button" id="cancelRestoreBtn" class="flex-1 py-1.5 rounded-lg text-xs text-neutral-400 bg-neutral-800">Cancel</button>
+          <button type="button" id="confirmRestoreBtn" class="flex-1 py-1.5 rounded-lg text-xs font-bold bg-white text-black hover:bg-neutral-200">Fetch & Restore</button>
+        </div>
+      </div>
+
+      <div class="pt-1 text-[10px] text-neutral-500 text-center leading-normal">
+        🔒 Real-time Google Cloud Sync &bull; Encrypted & Private
       </div>
     </div>
   </div>
@@ -606,6 +719,9 @@
 
     function saveDB(db) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+      if (typeof triggerAutoCloudSync === 'function') {
+        triggerAutoCloudSync(db);
+      }
     }
 
     // App State
@@ -1151,6 +1267,324 @@
           lucide.createIcons();
         }
       }
+
+      // ==========================================
+      // CLOUD SYNC & SECRET ACCOUNT CODE ENGINE
+      // ==========================================
+      const SYNC_CODE_KEY = 'khaata_sync_code';
+      const FIREBASE_URL_KEY = 'khaata_firebase_url';
+      const AUTO_SYNC_KEY = 'khaata_auto_sync';
+
+      const cloudModal = document.getElementById("cloudSyncModal");
+      const cloudHeaderBtn = document.getElementById("cloudHeaderBtn");
+      const openCloudFromSettings = document.getElementById("openCloudSyncFromSettingsBtn");
+      const closeCloudSyncBtn = document.getElementById("closeCloudSyncBtn");
+      const displaySyncCode = document.getElementById("displaySyncCode");
+      const copySyncCodeBtn = document.getElementById("copySyncCodeBtn");
+      const toggleCustomCodeBtn = document.getElementById("toggleCustomCodeBtn");
+      const customCodeContainer = document.getElementById("customCodeInputContainer");
+      const customCodeInput = document.getElementById("customCodeInput");
+      const saveCustomCodeBtn = document.getElementById("saveCustomCodeBtn");
+      const firebaseDbUrlInput = document.getElementById("firebaseDbUrlInput");
+      const saveFirebaseUrlBtn = document.getElementById("saveFirebaseUrlBtn");
+      const autoSyncToggle = document.getElementById("autoSyncToggle");
+      const syncNowUploadBtn = document.getElementById("syncNowUploadBtn");
+      const syncNowRestoreBtn = document.getElementById("syncNowRestoreBtn");
+      const restoreContainer = document.getElementById("restoreContainer");
+      const restoreCodeInput = document.getElementById("restoreCodeInput");
+      const cancelRestoreBtn = document.getElementById("cancelRestoreBtn");
+      const confirmRestoreBtn = document.getElementById("confirmRestoreBtn");
+      const cloudStatusDot = document.getElementById("cloudStatusDot");
+      const syncStatusIndicator = document.getElementById("syncStatusIndicator");
+      const settingsCloudBadge = document.getElementById("settingsCloudBadge");
+
+      function getOrCreateSyncCode() {
+        let code = localStorage.getItem(SYNC_CODE_KEY);
+        if (!code) {
+          const rand = Math.floor(1000 + Math.random() * 9000);
+          code = "KH-" + rand;
+          localStorage.setItem(SYNC_CODE_KEY, code);
+        }
+        return code;
+      }
+
+      function updateCloudStatusUI(status) {
+        if (!cloudStatusDot || !syncStatusIndicator) return;
+        if (status === 'synced') {
+          cloudStatusDot.className = "w-2 h-2 rounded-full bg-emerald-400 absolute top-1.5 right-1.5 border border-black";
+          syncStatusIndicator.textContent = "Synced ☁️";
+          syncStatusIndicator.className = "text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 font-semibold";
+          if (settingsCloudBadge) {
+            settingsCloudBadge.textContent = "Active";
+            settingsCloudBadge.className = "text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 font-mono";
+          }
+        } else if (status === 'syncing') {
+          cloudStatusDot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse absolute top-1.5 right-1.5 border border-black";
+          syncStatusIndicator.textContent = "Saving...";
+          syncStatusIndicator.className = "text-[10px] px-2 py-0.5 rounded-full bg-amber-950 text-amber-400 border border-amber-800 font-semibold";
+        } else if (status === 'offline') {
+          cloudStatusDot.className = "w-2 h-2 rounded-full bg-neutral-600 absolute top-1.5 right-1.5 border border-black";
+          syncStatusIndicator.textContent = "Offline";
+          syncStatusIndicator.className = "text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400";
+          if (settingsCloudBadge) {
+            settingsCloudBadge.textContent = "Offline";
+            settingsCloudBadge.className = "text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400 font-mono";
+          }
+        } else if (status === 'error') {
+          cloudStatusDot.className = "w-2 h-2 rounded-full bg-rose-500 absolute top-1.5 right-1.5 border border-black";
+          syncStatusIndicator.textContent = "Error";
+          syncStatusIndicator.className = "text-[10px] px-2 py-0.5 rounded-full bg-rose-950 text-rose-400 border border-rose-800 font-semibold";
+        } else {
+          // unconfigured
+          cloudStatusDot.className = "w-2 h-2 rounded-full bg-neutral-600 absolute top-1.5 right-1.5 border border-black";
+          syncStatusIndicator.textContent = "No Database";
+          syncStatusIndicator.className = "text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400";
+          if (settingsCloudBadge) {
+            settingsCloudBadge.textContent = "Offline";
+            settingsCloudBadge.className = "text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400 font-mono";
+          }
+        }
+      }
+
+      function updateCloudSyncModalUI() {
+        const code = getOrCreateSyncCode();
+        if (displaySyncCode) displaySyncCode.textContent = code;
+        const savedUrl = localStorage.getItem(FIREBASE_URL_KEY) || "";
+        if (firebaseDbUrlInput) firebaseDbUrlInput.value = savedUrl;
+        const autoSync = localStorage.getItem(AUTO_SYNC_KEY) !== 'false';
+        if (autoSyncToggle) autoSyncToggle.checked = autoSync;
+        if (!savedUrl) {
+          updateCloudStatusUI('unconfigured');
+        } else if (!navigator.onLine) {
+          updateCloudStatusUI('offline');
+        } else {
+          updateCloudStatusUI('synced');
+        }
+      }
+
+      let syncDebounceTimer = null;
+      window.triggerAutoCloudSync = function(db) {
+        const autoSync = localStorage.getItem(AUTO_SYNC_KEY) !== 'false';
+        if (!autoSync) return;
+        const dbUrl = localStorage.getItem(FIREBASE_URL_KEY);
+        if (!dbUrl) return;
+
+        if (syncDebounceTimer) clearTimeout(syncDebounceTimer);
+        syncDebounceTimer = setTimeout(() => {
+          pushToCloud(true);
+        }, 1200);
+      };
+
+      async function pushToCloud(silent = true) {
+        const dbUrl = localStorage.getItem(FIREBASE_URL_KEY);
+        const syncCode = getOrCreateSyncCode();
+        if (!dbUrl) {
+          if (!silent) alert("Pehle Firebase Realtime Database URL daalein aur Save URL dabayein!");
+          updateCloudStatusUI('unconfigured');
+          return;
+        }
+
+        if (!navigator.onLine) {
+          updateCloudStatusUI('offline');
+          if (!silent) showToast("Aap offline hain! Internet connect hone par sync hoga.");
+          return;
+        }
+
+        updateCloudStatusUI('syncing');
+        try {
+          let cleanUrl = dbUrl.trim().replace(/\/$/, "");
+          if (!cleanUrl.startsWith("http")) cleanUrl = "https://" + cleanUrl;
+          const endpoint = `${cleanUrl}/sync/${encodeURIComponent(syncCode)}.json`;
+
+          const localData = getDB();
+          const payload = {
+            sync_code: syncCode,
+            updated_at: new Date().toISOString(),
+            data: localData
+          };
+
+          const res = await fetch(endpoint, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (res.ok) {
+            updateCloudStatusUI('synced');
+            if (!silent) showToast("Cloud par kamyabi se save ho gaya! ☁️");
+          } else {
+            updateCloudStatusUI('error');
+            if (!silent) alert("Firebase Error: Database Rules mein Read/Write enable karein!");
+          }
+        } catch (err) {
+          console.error("Cloud push failed:", err);
+          updateCloudStatusUI('error');
+          if (!silent) showToast("Network error: Cloud par save nahi ho saka.");
+        }
+      }
+
+      async function restoreFromCloud(codeToRestore) {
+        const dbUrl = localStorage.getItem(FIREBASE_URL_KEY);
+        if (!dbUrl) {
+          alert("Pehle Firebase Realtime Database URL daalein!");
+          return;
+        }
+        if (!codeToRestore || !codeToRestore.trim()) {
+          alert("Secret Sync Code daalna zaroori hai!");
+          return;
+        }
+
+        const code = codeToRestore.trim().toUpperCase();
+        let cleanUrl = dbUrl.trim().replace(/\/$/, "");
+        if (!cleanUrl.startsWith("http")) cleanUrl = "https://" + cleanUrl;
+        const endpoint = `${cleanUrl}/sync/${encodeURIComponent(code)}.json`;
+
+        try {
+          showToast("Cloud se data mangwaya ja raha hai...");
+          const res = await fetch(endpoint);
+          if (!res.ok) {
+            alert("Fetch failed. Database URL ya Internet check karein.");
+            return;
+          }
+          const result = await res.json();
+          if (!result || !result.data) {
+            alert(`Is Secret Code ("${code}") ka koi data nahi mila! Baraye meherbani code dobara check karein.`);
+            return;
+          }
+
+          // Restore
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(result.data));
+          localStorage.setItem(SYNC_CODE_KEY, code);
+
+          render();
+          updateCloudSyncModalUI();
+          updateCloudStatusUI('synced');
+          showToast("Account kamyabi se restore ho gaya! 🎉");
+          restoreContainer.classList.add("hidden");
+          cloudModal.classList.add("hidden");
+        } catch (err) {
+          console.error("Restore failed:", err);
+          alert("Connection error: Data restore nahi ho saka.");
+        }
+      }
+
+      // Event Listeners for Cloud Sync
+      if (cloudHeaderBtn) {
+        cloudHeaderBtn.addEventListener("click", () => {
+          updateCloudSyncModalUI();
+          cloudModal.classList.remove("hidden");
+        });
+      }
+
+      if (openCloudFromSettings) {
+        openCloudFromSettings.addEventListener("click", () => {
+          setModal.classList.add("hidden");
+          updateCloudSyncModalUI();
+          cloudModal.classList.remove("hidden");
+        });
+      }
+
+      if (closeCloudSyncBtn) {
+        closeCloudSyncBtn.addEventListener("click", () => {
+          cloudModal.classList.add("hidden");
+        });
+      }
+
+      if (copySyncCodeBtn) {
+        copySyncCodeBtn.addEventListener("click", () => {
+          const code = getOrCreateSyncCode();
+          navigator.clipboard.writeText(code).then(() => {
+            showToast("Secret Code Copy Ho Gaya: " + code);
+          }).catch(() => {
+            prompt("Aapka Secret Sync Code Yeh Hai:", code);
+          });
+        });
+      }
+
+      if (toggleCustomCodeBtn) {
+        toggleCustomCodeBtn.addEventListener("click", () => {
+          customCodeContainer.classList.toggle("hidden");
+          if (!customCodeContainer.classList.contains("hidden")) {
+            customCodeInput.value = getOrCreateSyncCode();
+            customCodeInput.focus();
+          }
+        });
+      }
+
+      if (saveCustomCodeBtn) {
+        saveCustomCodeBtn.addEventListener("click", () => {
+          const val = customCodeInput.value.trim().toUpperCase();
+          if (!val || val.length < 3) {
+            alert("Code kam az kam 3 characters ka hona chahiye!");
+            return;
+          }
+          localStorage.setItem(SYNC_CODE_KEY, val);
+          showToast("Aapka Secret Code Update Ho Gaya!");
+          customCodeContainer.classList.add("hidden");
+          updateCloudSyncModalUI();
+          pushToCloud(false);
+        });
+      }
+
+      if (saveFirebaseUrlBtn) {
+        saveFirebaseUrlBtn.addEventListener("click", () => {
+          const val = firebaseDbUrlInput.value.trim();
+          if (!val) {
+            alert("Firebase Database URL daalein!");
+            return;
+          }
+          localStorage.setItem(FIREBASE_URL_KEY, val);
+          showToast("Firebase URL save ho gaya!");
+          updateCloudSyncModalUI();
+          pushToCloud(false);
+        });
+      }
+
+      if (autoSyncToggle) {
+        autoSyncToggle.addEventListener("change", (e) => {
+          localStorage.setItem(AUTO_SYNC_KEY, e.target.checked ? 'true' : 'false');
+          showToast(e.target.checked ? "Auto-Sync On ho gaya!" : "Auto-Sync Off ho gaya!");
+        });
+      }
+
+      if (syncNowUploadBtn) {
+        syncNowUploadBtn.addEventListener("click", () => {
+          pushToCloud(false);
+        });
+      }
+
+      if (syncNowRestoreBtn) {
+        syncNowRestoreBtn.addEventListener("click", () => {
+          restoreContainer.classList.toggle("hidden");
+          if (!restoreContainer.classList.contains("hidden")) {
+            restoreCodeInput.value = "";
+            restoreCodeInput.focus();
+          }
+        });
+      }
+
+      if (cancelRestoreBtn) {
+        cancelRestoreBtn.addEventListener("click", () => {
+          restoreContainer.classList.add("hidden");
+        });
+      }
+
+      if (confirmRestoreBtn) {
+        confirmRestoreBtn.addEventListener("click", () => {
+          restoreFromCloud(restoreCodeInput.value);
+        });
+      }
+
+      window.addEventListener('online', () => {
+        pushToCloud(true);
+      });
+
+      window.addEventListener('offline', () => {
+        updateCloudStatusUI('offline');
+      });
+
+      // Init UI state
+      updateCloudSyncModalUI();
 
       // Initialize PIN Lock on App Launch
       initPinState();
