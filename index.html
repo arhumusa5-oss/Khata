@@ -445,6 +445,47 @@
     </div>
   </div>
 
+  <!-- Cloud Security Check / Auth Modal (Matte Black) -->
+  <div id="cloudAuthModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-neutral-950 border border-neutral-800 w-full max-w-sm rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+          Cloud Security Check
+        </h3>
+        <button id="closeCloudAuthBtn" class="text-neutral-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-1">
+        <p class="text-xs text-neutral-200 font-semibold flex items-center gap-1.5">
+          <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-400"></i> Cloud Settings Protected
+        </p>
+        <p class="text-[11px] text-neutral-400 leading-relaxed">
+          Cloud access karne ke liye apna <strong>6-words/characters Secret Code</strong> daalein:
+        </p>
+      </div>
+
+      <div class="space-y-2">
+        <div class="relative">
+          <input type="password" id="inputCloudAuthCode" placeholder="Enter 6-Char Code" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2.5 pr-10 text-sm text-white font-mono text-center tracking-widest uppercase focus:outline-none focus:border-emerald-500 transition">
+          <button type="button" id="toggleCloudAuthVisibilityBtn" class="absolute right-3 top-3 text-neutral-500 hover:text-white">
+            <i id="cloudAuthEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <div id="cloudAuthError" class="hidden text-xs font-semibold text-rose-500 text-center py-1.5 bg-rose-950/40 rounded-lg border border-rose-900/50">
+          Ghalat Secret Code! Access Denied.
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-1">
+        <button type="button" id="cancelCloudAuthBtn" class="px-3 py-1.5 text-xs text-neutral-400 hover:text-white">Cancel</button>
+        <button type="button" id="confirmCloudAuthBtn" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-black hover:bg-neutral-200 active:scale-95 transition">Verify & Open</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 6. Cloud Sync & Secret Account Code Modal -->
   <div id="cloudSyncModal" class="modal-backdrop hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-neutral-950 border border-neutral-800 w-full max-w-sm rounded-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto">
@@ -467,27 +508,33 @@
         
         <div class="flex items-center gap-2">
           <div id="displaySyncCode" class="flex-1 bg-black border border-neutral-700 rounded-lg px-3 py-2 text-base font-extrabold font-mono tracking-widest text-emerald-400 text-center select-all">
-            KH-0000
+            ******
           </div>
+          <button type="button" id="toggleMaskSyncCodeBtn" title="Show/Hide Code" class="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700 active:scale-95 transition">
+            <i id="syncCodeEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+          </button>
           <button type="button" id="copySyncCodeBtn" title="Copy Code" class="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white border border-neutral-700 active:scale-95 transition">
             <i data-lucide="copy" class="w-4 h-4"></i>
           </button>
         </div>
         <p class="text-[10px] text-neutral-400 leading-tight">
-          Yeh code kisi bhi doosre mobile par daal kar aap apna hisab wapis laa sakte hain.
+          Yeh 6-word/character code yaad rakhein! Naye mobile par yahi daal kar hisab wapis aayega.
         </p>
 
         <!-- Change / Custom Code option -->
         <div class="pt-1 flex items-center justify-between">
           <button type="button" id="toggleCustomCodeBtn" class="text-[11px] text-neutral-300 hover:text-white underline">
-            Apna Pasandida Code / Number Rakhein
+            Apna 6-Word Code / Number Set Karein
           </button>
+          <span class="text-[10px] text-emerald-400 flex items-center gap-1 font-mono">
+            <i data-lucide="shield-check" class="w-3 h-3"></i> Locked
+          </span>
         </div>
         
         <div id="customCodeInputContainer" class="hidden pt-1 space-y-1.5">
-          <input type="text" id="customCodeInput" placeholder="e.g. 03001234567 ya MYKHATA" class="w-full bg-black border border-neutral-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono uppercase focus:outline-none focus:border-emerald-500">
-          <button type="button" id="saveCustomCodeBtn" class="w-full py-1.5 rounded-lg text-xs font-bold bg-white text-black hover:bg-neutral-200">
-            Code Update Karein
+          <input type="text" id="customCodeInput" maxlength="16" placeholder="e.g. 6-chars (ARHUM1, 786110)" class="w-full bg-black border border-neutral-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-mono uppercase focus:outline-none focus:border-emerald-500">
+          <button type="button" id="saveCustomCodeBtn" class="w-full py-1.5 rounded-lg text-xs font-bold bg-white text-black hover:bg-neutral-200 active:scale-95 transition">
+            6-Word Code Save & Lock Karein
           </button>
         </div>
       </div>
@@ -1274,6 +1321,8 @@
       const SYNC_CODE_KEY = 'khaata_sync_code';
       const FIREBASE_URL_KEY = 'khaata_firebase_url';
       const AUTO_SYNC_KEY = 'khaata_auto_sync';
+      const CLOUD_LOCKED_KEY = 'khaata_cloud_is_locked';
+      let isSyncCodeMasked = true;
 
       const cloudModal = document.getElementById("cloudSyncModal");
       const cloudHeaderBtn = document.getElementById("cloudHeaderBtn");
@@ -1281,6 +1330,8 @@
       const closeCloudSyncBtn = document.getElementById("closeCloudSyncBtn");
       const displaySyncCode = document.getElementById("displaySyncCode");
       const copySyncCodeBtn = document.getElementById("copySyncCodeBtn");
+      const toggleMaskSyncCodeBtn = document.getElementById("toggleMaskSyncCodeBtn");
+      const syncCodeEyeIcon = document.getElementById("syncCodeEyeIcon");
       const toggleCustomCodeBtn = document.getElementById("toggleCustomCodeBtn");
       const customCodeContainer = document.getElementById("customCodeInputContainer");
       const customCodeInput = document.getElementById("customCodeInput");
@@ -1297,6 +1348,16 @@
       const cloudStatusDot = document.getElementById("cloudStatusDot");
       const syncStatusIndicator = document.getElementById("syncStatusIndicator");
       const settingsCloudBadge = document.getElementById("settingsCloudBadge");
+
+      // Cloud Auth elements
+      const cloudAuthModal = document.getElementById("cloudAuthModal");
+      const closeCloudAuthBtn = document.getElementById("closeCloudAuthBtn");
+      const cancelCloudAuthBtn = document.getElementById("cancelCloudAuthBtn");
+      const confirmCloudAuthBtn = document.getElementById("confirmCloudAuthBtn");
+      const inputCloudAuthCode = document.getElementById("inputCloudAuthCode");
+      const cloudAuthError = document.getElementById("cloudAuthError");
+      const toggleCloudAuthVisibilityBtn = document.getElementById("toggleCloudAuthVisibilityBtn");
+      const cloudAuthEyeIcon = document.getElementById("cloudAuthEyeIcon");
 
       function getOrCreateSyncCode() {
         let code = localStorage.getItem(SYNC_CODE_KEY);
@@ -1348,7 +1409,13 @@
 
       function updateCloudSyncModalUI() {
         const code = getOrCreateSyncCode();
-        if (displaySyncCode) displaySyncCode.textContent = code;
+        if (displaySyncCode) {
+          if (isSyncCodeMasked) {
+            displaySyncCode.textContent = "•".repeat(Math.max(code.length, 6));
+          } else {
+            displaySyncCode.textContent = code;
+          }
+        }
         const savedUrl = localStorage.getItem(FIREBASE_URL_KEY) || "";
         if (firebaseDbUrlInput) firebaseDbUrlInput.value = savedUrl;
         const autoSync = localStorage.getItem(AUTO_SYNC_KEY) !== 'false';
@@ -1455,6 +1522,7 @@
           // Restore
           localStorage.setItem(STORAGE_KEY, JSON.stringify(result.data));
           localStorage.setItem(SYNC_CODE_KEY, code);
+          localStorage.setItem(CLOUD_LOCKED_KEY, 'true');
 
           render();
           updateCloudSyncModalUI();
@@ -1468,25 +1536,131 @@
         }
       }
 
+      function requestCloudAccess() {
+        const isLocked = localStorage.getItem(CLOUD_LOCKED_KEY) === 'true';
+        const savedCode = localStorage.getItem(SYNC_CODE_KEY);
+
+        // If not locked yet (First time), open directly!
+        if (!isLocked || !savedCode) {
+          openCloudSyncModal();
+          return;
+        }
+
+        // Next time: Ask for the 6-word / character secret code!
+        if (inputCloudAuthCode) {
+          inputCloudAuthCode.value = "";
+          inputCloudAuthCode.type = "password";
+          inputCloudAuthCode.classList.remove("border-rose-500");
+        }
+        if (cloudAuthError) cloudAuthError.classList.add("hidden");
+        if (cloudAuthEyeIcon) {
+          cloudAuthEyeIcon.setAttribute("data-lucide", "eye");
+          lucide.createIcons();
+        }
+        if (cloudAuthModal) {
+          cloudAuthModal.classList.remove("hidden");
+          setTimeout(() => {
+            if (inputCloudAuthCode) inputCloudAuthCode.focus();
+          }, 150);
+        }
+      }
+
+      function openCloudSyncModal() {
+        updateCloudSyncModalUI();
+        if (cloudModal) cloudModal.classList.remove("hidden");
+      }
+
+      function verifyCloudAuth() {
+        const savedCode = localStorage.getItem(SYNC_CODE_KEY) || "";
+        const entered = (inputCloudAuthCode ? inputCloudAuthCode.value : "").trim().toUpperCase();
+
+        if (entered && entered === savedCode.trim().toUpperCase()) {
+          // Success!
+          if (cloudAuthModal) cloudAuthModal.classList.add("hidden");
+          openCloudSyncModal();
+          showToast("Cloud Access Granted 🔓");
+        } else {
+          // Access Denied!
+          if (cloudAuthError) {
+            cloudAuthError.textContent = "Ghalat Secret Code! Access Denied.";
+            cloudAuthError.classList.remove("hidden");
+          }
+          if (inputCloudAuthCode) {
+            inputCloudAuthCode.classList.add("border-rose-500");
+            inputCloudAuthCode.value = "";
+            inputCloudAuthCode.focus();
+          }
+        }
+      }
+
       // Event Listeners for Cloud Sync
       if (cloudHeaderBtn) {
         cloudHeaderBtn.addEventListener("click", () => {
-          updateCloudSyncModalUI();
-          cloudModal.classList.remove("hidden");
+          requestCloudAccess();
         });
       }
 
       if (openCloudFromSettings) {
         openCloudFromSettings.addEventListener("click", () => {
           setModal.classList.add("hidden");
-          updateCloudSyncModalUI();
-          cloudModal.classList.remove("hidden");
+          requestCloudAccess();
         });
       }
 
       if (closeCloudSyncBtn) {
         closeCloudSyncBtn.addEventListener("click", () => {
           cloudModal.classList.add("hidden");
+          if (localStorage.getItem(SYNC_CODE_KEY)) {
+            localStorage.setItem(CLOUD_LOCKED_KEY, 'true');
+          }
+        });
+      }
+
+      if (confirmCloudAuthBtn) {
+        confirmCloudAuthBtn.addEventListener("click", verifyCloudAuth);
+      }
+
+      if (inputCloudAuthCode) {
+        inputCloudAuthCode.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            verifyCloudAuth();
+          }
+        });
+      }
+
+      if (cancelCloudAuthBtn) {
+        cancelCloudAuthBtn.addEventListener("click", () => {
+          cloudAuthModal.classList.add("hidden");
+        });
+      }
+
+      if (closeCloudAuthBtn) {
+        closeCloudAuthBtn.addEventListener("click", () => {
+          cloudAuthModal.classList.add("hidden");
+        });
+      }
+
+      if (toggleCloudAuthVisibilityBtn) {
+        toggleCloudAuthVisibilityBtn.addEventListener("click", () => {
+          if (inputCloudAuthCode.type === "password") {
+            inputCloudAuthCode.type = "text";
+            cloudAuthEyeIcon.setAttribute("data-lucide", "eye-off");
+          } else {
+            inputCloudAuthCode.type = "password";
+            cloudAuthEyeIcon.setAttribute("data-lucide", "eye");
+          }
+          lucide.createIcons();
+        });
+      }
+
+      if (toggleMaskSyncCodeBtn) {
+        toggleMaskSyncCodeBtn.addEventListener("click", () => {
+          isSyncCodeMasked = !isSyncCodeMasked;
+          if (syncCodeEyeIcon) {
+            syncCodeEyeIcon.setAttribute("data-lucide", isSyncCodeMasked ? "eye" : "eye-off");
+            lucide.createIcons();
+          }
+          updateCloudSyncModalUI();
         });
       }
 
@@ -1519,7 +1693,8 @@
             return;
           }
           localStorage.setItem(SYNC_CODE_KEY, val);
-          showToast("Aapka Secret Code Update Ho Gaya!");
+          localStorage.setItem(CLOUD_LOCKED_KEY, 'true'); // Lock from next time!
+          showToast("6-Word Code Save Ho Gaya! Agli dafa yeh code daal kar enter hongey 🔒");
           customCodeContainer.classList.add("hidden");
           updateCloudSyncModalUI();
           pushToCloud(false);
@@ -1534,6 +1709,9 @@
             return;
           }
           localStorage.setItem(FIREBASE_URL_KEY, val);
+          if (localStorage.getItem(SYNC_CODE_KEY)) {
+            localStorage.setItem(CLOUD_LOCKED_KEY, 'true');
+          }
           showToast("Firebase URL save ho gaya!");
           updateCloudSyncModalUI();
           pushToCloud(false);
