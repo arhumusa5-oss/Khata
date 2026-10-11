@@ -371,7 +371,7 @@
             <i data-lucide="credit-card" class="w-3.5 h-3.5 text-neutral-300"></i> Total Cost (Khareed)
           </div>
           <div class="text-xl font-black text-neutral-200 mt-1.5 tracking-tight" id="bizStatTotalCost">Rs. 0</div>
-          <div class="text-[10px] text-neutral-400 mt-1">Sourcing expenses</div>
+          <div class="text-[10px] text-neutral-400 mt-1" id="bizStatVendorUnpaid">Vendor Baqi: 0</div>
         </div>
       </div>
 
@@ -399,6 +399,8 @@
           <button type="button" data-biz-filter="wp2" class="biz-filter-btn text-[10px] font-bold px-3 py-1.5 rounded-lg bg-neutral-900 text-emerald-400 border border-neutral-800 hover:border-emerald-700 transition">WP 2</button>
           <button type="button" data-biz-filter="profit" class="biz-filter-btn text-[10px] font-bold px-3 py-1.5 rounded-lg bg-neutral-900 text-emerald-400 border border-neutral-800 hover:border-emerald-700 transition">Munafa (+)</button>
           <button type="button" data-biz-filter="loss" class="biz-filter-btn text-[10px] font-bold px-3 py-1.5 rounded-lg bg-neutral-900 text-rose-400 border border-neutral-800 hover:border-rose-700 transition">Nuqsan (-)</button>
+          <button type="button" data-biz-filter="vendor_no" class="biz-filter-btn text-[10px] font-bold px-3 py-1.5 rounded-lg bg-neutral-900 text-amber-400 border border-neutral-800 hover:border-amber-700 transition">Vendor: No ⏳</button>
+          <button type="button" data-biz-filter="vendor_yes" class="biz-filter-btn text-[10px] font-bold px-3 py-1.5 rounded-lg bg-neutral-900 text-emerald-400 border border-neutral-800 hover:border-emerald-700 transition">Vendor: Yes ✅</button>
         </div>
       </div>
 
@@ -636,6 +638,20 @@
           <div>
             <label class="block text-[11px] font-medium text-neutral-400 mb-1">Provider Name (Source)</label>
             <input type="text" id="bizDealProvider" placeholder="Supplier / Vendor" required class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white">
+          </div>
+        </div>
+
+        <!-- 9th: Vendor Payment Status Dropdown (Yes / No) -->
+        <div>
+          <label class="block text-[11px] font-medium text-neutral-400 mb-1 flex items-center justify-between">
+            <span>Vendor Payment (Khareed Ada Hui?)</span>
+            <span class="text-[9.5px] text-neutral-500 font-mono">Yes / No</span>
+          </label>
+          <div class="relative">
+            <select id="bizDealVendorPaid" class="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2.5 text-xs text-white font-bold focus:outline-none focus:border-white">
+              <option value="no">No (Payment Baqi Hai / Unpaid ⏳)</option>
+              <option value="yes">Yes (Payment Ho Gayi / Paid ✅)</option>
+            </select>
           </div>
         </div>
 
@@ -1273,6 +1289,7 @@
               phone: "03001234567",
               source: "WP 1",
               provider: "Vendor Alpha",
+              vendor_paid: "yes",
               created_at: 1728400001000
             },
             {
@@ -1287,6 +1304,7 @@
               phone: "03219876543",
               source: "WP 2",
               provider: "Prime Digital",
+              vendor_paid: "no",
               created_at: 1728400002000
             }
           ],
@@ -1311,6 +1329,9 @@
       }
       const data = JSON.parse(raw);
       if (!data.business_deals) data.business_deals = [];
+      data.business_deals.forEach(d => {
+        if (!d.vendor_paid) d.vendor_paid = 'no';
+      });
       if (!data.pending_tasks) data.pending_tasks = [];
       if (!data.customTabs) data.customTabs = [];
       if (!data.activeTab) data.activeTab = 'personal';
@@ -1699,15 +1720,28 @@
       const netProfit = totalSell - totalCost;
       const totalOrders = monthDeals.length;
 
+      const unpaidDeals = monthDeals.filter(d => (d.vendor_paid !== 'yes'));
+      const unpaidCount = unpaidDeals.length;
+      const unpaidCost = unpaidDeals.reduce((a, b) => a + (Number(b.cost) || 0), 0);
+
       const totalSellElem = document.getElementById("bizStatTotalSell");
       const totalCostElem = document.getElementById("bizStatTotalCost");
       const ordersCountElem = document.getElementById("bizStatOrdersCount");
       const netProfitElem = document.getElementById("bizStatNetProfit");
       const netIcon = document.getElementById("bizProfitBadgeIcon");
+      const vendorStatElem = document.getElementById("bizStatVendorUnpaid");
 
       if (totalSellElem) totalSellElem.textContent = `Rs. ${totalSell.toLocaleString('en-PK')}`;
       if (totalCostElem) totalCostElem.textContent = `Rs. ${totalCost.toLocaleString('en-PK')}`;
       if (ordersCountElem) ordersCountElem.textContent = `${totalOrders} Orders`;
+
+      if (vendorStatElem) {
+        if (unpaidCount > 0) {
+          vendorStatElem.innerHTML = `<span class="text-amber-400 font-bold">Baqi: ${unpaidCount} (Rs. ${unpaidCost.toLocaleString('en-PK')})</span>`;
+        } else {
+          vendorStatElem.innerHTML = `<span class="text-emerald-400 font-bold">Sab Ada Hai ✅</span>`;
+        }
+      }
 
       if (netProfitElem) {
         if (netProfit > 0) {
@@ -1741,8 +1775,11 @@
         if (bizActiveFilter === 'wp2' && d.source !== 'WP 2') return false;
         if (bizActiveFilter === 'profit' && (Number(d.sell) - Number(d.cost)) < 0) return false;
         if (bizActiveFilter === 'loss' && (Number(d.sell) - Number(d.cost)) >= 0) return false;
+        if (bizActiveFilter === 'vendor_no' && d.vendor_paid === 'yes') return false;
+        if (bizActiveFilter === 'vendor_yes' && d.vendor_paid !== 'yes') return false;
         if (search) {
-          const matchStr = `${d.service} ${d.customer} ${d.phone || ''} ${d.provider || ''}`.toLowerCase();
+          const vStatus = d.vendor_paid === 'yes' ? 'paid yes ada' : 'unpaid no baqi';
+          const matchStr = `${d.service} ${d.customer} ${d.phone || ''} ${d.provider || ''} ${vStatus}`.toLowerCase();
           if (!matchStr.includes(search)) return false;
         }
         return true;
@@ -1767,6 +1804,7 @@
           const isProfit = pl >= 0;
           const plFormatted = (isProfit ? "+" : "-") + "Rs. " + Math.abs(pl).toLocaleString('en-PK');
           const plColor = isProfit ? "text-emerald-400" : "text-rose-500";
+          const isVendorPaid = deal.vendor_paid === 'yes';
 
           let sourceBadge = "";
           if (deal.source === 'WP 1') {
@@ -1800,17 +1838,22 @@
                   ` : ''}
                 </div>
                 <div class="text-[10px] text-neutral-500 truncate font-mono">
-                  From: <span class="text-neutral-300">${escapeHtml(deal.provider || 'Direct')}</span>
+                  From: <span class="text-neutral-300 font-bold">${escapeHtml(deal.provider || 'Direct')}</span>
                 </div>
               </div>
 
-              <div class="flex items-center justify-between pt-1.5 border-t border-neutral-800/60">
-                <div class="flex items-center gap-3 text-xs font-mono">
+              <div class="flex items-center justify-between pt-1.5 border-t border-neutral-800/60 gap-2">
+                <div class="flex items-center gap-2 sm:gap-3 text-xs font-mono flex-wrap">
                   <span class="text-neutral-400 text-[11px]">Cost: <strong class="text-neutral-300">Rs. ${cost.toLocaleString()}</strong></span>
                   <span class="text-neutral-400 text-[11px]">Sell: <strong class="text-white">Rs. ${sell.toLocaleString()}</strong></span>
                   <span class="text-[11px] font-black ${plColor}">P/L: ${plFormatted}</span>
                 </div>
                 <div class="flex items-center gap-1.5 flex-shrink-0">
+                  <!-- Vendor Payment Button -->
+                  <button type="button" onclick="toggleVendorPayment(${deal.id})" title="Click to toggle Vendor Payment (Yes / No)" class="text-[10px] font-extrabold px-2 py-1 rounded-lg ${isVendorPaid ? 'bg-emerald-950 text-emerald-400 border border-emerald-800 hover:bg-emerald-900' : 'bg-amber-950 text-amber-400 border border-amber-800 hover:bg-amber-900'} active:scale-95 transition flex items-center gap-1 shadow-sm">
+                    <i data-lucide="${isVendorPaid ? 'check-circle-2' : 'clock'}" class="w-3 h-3"></i>
+                    <span>Vendor: ${isVendorPaid ? 'Yes' : 'No'}</span>
+                  </button>
                   <button onclick="openEditBizDealModal(${deal.id})" class="p-1.5 rounded-lg text-neutral-400 hover:text-white bg-neutral-800/80 hover:bg-neutral-700 transition" title="Edit Deal">
                     <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                   </button>
@@ -1827,6 +1870,20 @@
       lucide.createIcons();
     }
 
+    window.toggleVendorPayment = function(id) {
+      const db = getDB();
+      const deal = (db.business_deals || []).find(d => d.id === id);
+      if (!deal) return;
+      deal.vendor_paid = (deal.vendor_paid === 'yes') ? 'no' : 'yes';
+      saveDB(db);
+      if (deal.vendor_paid === 'yes') {
+        showToast("Vendor Payment: Yes (Ada Ho Gayi ✅)");
+      } else {
+        showToast("Vendor Payment: No (Baqi Hai ⏳)");
+      }
+      renderBusiness();
+    };
+
     window.openEditBizDealModal = function(id) {
       const db = getDB();
       const deal = (db.business_deals || []).find(d => d.id === id);
@@ -1841,6 +1898,8 @@
       document.getElementById("bizDealPhone").value = deal.phone || '';
       document.getElementById("bizDealSource").value = deal.source || 'WP 1';
       document.getElementById("bizDealProvider").value = deal.provider;
+      const vPaidElem = document.getElementById("bizDealVendorPaid");
+      if (vPaidElem) vPaidElem.value = deal.vendor_paid || 'no';
       document.getElementById("deleteBizDealModalBtn").classList.remove("hidden");
       calculateLivePl();
 
@@ -2185,6 +2244,8 @@
           document.getElementById("bizDealId").value = "";
           document.getElementById("bizDealModalTitle").innerHTML = `<i data-lucide="briefcase" class="w-4 h-4 text-emerald-400"></i> Nayi Business Deal`;
           document.getElementById("bizDealDate").value = new Date().toISOString().split("T")[0];
+          const vPaidSel = document.getElementById("bizDealVendorPaid");
+          if (vPaidSel) vPaidSel.value = "no";
           document.getElementById("deleteBizDealModalBtn").classList.add("hidden");
           calculateLivePl();
           bizModal.classList.remove("hidden");
@@ -2364,6 +2425,7 @@
               deal.phone = document.getElementById("bizDealPhone").value.trim();
               deal.source = document.getElementById("bizDealSource").value;
               deal.provider = document.getElementById("bizDealProvider").value.trim();
+              deal.vendor_paid = document.getElementById("bizDealVendorPaid") ? document.getElementById("bizDealVendorPaid").value : 'no';
             }
             showToast("Deal update ho gayi!");
           } else {
@@ -2380,6 +2442,7 @@
               phone: document.getElementById("bizDealPhone").value.trim(),
               source: document.getElementById("bizDealSource").value,
               provider: document.getElementById("bizDealProvider").value.trim(),
+              vendor_paid: document.getElementById("bizDealVendorPaid") ? document.getElementById("bizDealVendorPaid").value : 'no',
               created_at: Date.now()
             };
             db.business_deals.push(newDeal);
