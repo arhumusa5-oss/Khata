@@ -169,12 +169,15 @@
         </button>
       </form>
 
-      <!-- Bottom Hint -->
-      <div class="pt-2 border-t border-neutral-800 text-center">
+      <!-- Bottom Hint & Guest Mode Option -->
+      <div class="pt-2 border-t border-neutral-800 text-center space-y-1.5">
         <p id="authSwitchPrompt" class="text-[11px] text-neutral-400">
           Naya account banana chahte hain? 
           <button type="button" id="authSwitchLink" class="text-white underline font-semibold ml-1">Naya Account</button>
         </p>
+        <button type="button" id="authGuestModeBtn" class="text-neutral-400 hover:text-white text-[11px] py-1 underline font-semibold transition block mx-auto">
+          Bina Login Ke Istemaal Karein (Guest / Offline Mode) &rarr;
+        </button>
       </div>
 
     </div>
@@ -936,6 +939,12 @@
           <i data-lucide="chevron-right" class="w-4 h-4 text-neutral-500"></i>
         </label>
 
+        <!-- Danger Zone: Reset / Clear All Data -->
+        <button type="button" id="clearAllDataBtn" class="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-rose-950/40 text-xs font-bold text-rose-400 border border-neutral-800 hover:border-rose-900/60 flex items-center justify-between transition">
+          <span class="flex items-center gap-2"><i data-lucide="trash-2" class="w-4 h-4 text-rose-500"></i> Clear All Data (Sab Delete Karein)</span>
+          <span class="text-[10px] text-rose-500/70 font-mono">Reset</span>
+        </button>
+
         <!-- Account & Logout Card in Settings -->
         <div class="w-full p-3 rounded-xl bg-neutral-900 border border-neutral-800 space-y-2">
           <div class="flex items-center justify-between">
@@ -1241,79 +1250,60 @@
           activeTab: 'personal',
           months: {},
           transactions: [],
-          business_deals: [
-            {
-              id: 1728400001000,
-              month_key: "2026-10",
-              date: "2026-10-04",
-              service: "Canva Pro 1 Month",
-              cost: 350,
-              sell: 600,
-              pl: 250,
-              customer: "Ahmed Raza",
-              phone: "03001234567",
-              source: "WP 1",
-              provider: "Vendor Alpha",
-              vendor_paid: "yes",
-              created_at: 1728400001000
-            },
-            {
-              id: 1728400002000,
-              month_key: "2026-10",
-              date: "2026-10-04",
-              service: "Netflix UHD 1 Screen",
-              cost: 850,
-              sell: 1200,
-              pl: 350,
-              customer: "Usman Ali",
-              phone: "03219876543",
-              source: "WP 2",
-              provider: "Prime Digital",
-              vendor_paid: "no",
-              created_at: 1728400002000
-            }
-          ],
-          pending_tasks: [
-            {
-              id: 1728400003000,
-              customer: "Bilal Raza",
-              service: "Telegram Members",
-              manager: "Arhum",
-              link: "https://t.me/example",
-              quantity: "1000",
-              provider: "SMM Provider",
-              status: "pending",
-              reminder: "Check drop rate in 24 hours",
-              created_at: 1728400003000
-            }
-          ],
-          customTabs: []
+          business_deals: [],
+          pending_tasks: [],
+          customTabs: [],
+          updated_at: Date.now()
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
         return initial;
       }
-      const data = JSON.parse(raw);
-      if (!data.business_deals) data.business_deals = [];
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch(e) {
+        data = {};
+      }
+      if (!data || typeof data !== 'object') data = {};
+      if (!Array.isArray(data.transactions)) data.transactions = [];
+      if (!Array.isArray(data.business_deals)) data.business_deals = [];
+      // Clean up legacy dummy sample deals if untouched
+      data.business_deals = data.business_deals.filter(d => d.id !== 1728400001000 && d.id !== 1728400002000);
       data.business_deals.forEach(d => {
         if (!d.vendor_paid) d.vendor_paid = 'no';
       });
-      if (!data.pending_tasks) data.pending_tasks = [];
-      if (!data.customTabs) data.customTabs = [];
+      if (!Array.isArray(data.pending_tasks)) data.pending_tasks = [];
+      data.pending_tasks = data.pending_tasks.filter(t => t.id !== 1728400003000);
+      if (!Array.isArray(data.customTabs)) data.customTabs = [];
       if (!data.activeTab) data.activeTab = 'personal';
       return data;
     }
 
     function saveDB(db) {
+      if (!db || typeof db !== 'object') return;
+      db.updated_at = Date.now();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
       if (typeof triggerAutoCloudSync === 'function') {
         triggerAutoCloudSync(db);
       }
     }
 
-    // App State
-    let currentTab = "personal";
-    let currentMonth = "2026-10";
+    function getTodayMonthKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    // App State - Auto-defaults to TODAY's Real Month & remembers selection
+    let currentTab = localStorage.getItem('khaata_active_tab') || "personal";
+    let currentMonth = localStorage.getItem('khaata_active_month') || getTodayMonthKey();
     let activeFilter = "all";
+
+    function updateActiveMonth(newMonth) {
+      currentMonth = newMonth || getTodayMonthKey();
+      localStorage.setItem('khaata_active_month', currentMonth);
+      const displayElem = document.getElementById("currentMonthDisplay");
+      if (displayElem) displayElem.textContent = formatMonthHeading(currentMonth);
+    }
 
     function formatPKR(val, showSign = false) {
       const num = Number(val) || 0;
@@ -1555,6 +1545,7 @@
 
     function switchTab(tabId) {
       currentTab = tabId;
+      localStorage.setItem('khaata_active_tab', tabId);
       const db = getDB();
       db.activeTab = tabId;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
@@ -1661,6 +1652,9 @@
     function renderBusiness() {
       const db = getDB();
       const allDeals = db.business_deals || [];
+
+      const displayElem = document.getElementById("currentMonthDisplay");
+      if (displayElem) displayElem.textContent = formatMonthHeading(currentMonth);
 
       // Calculate totals for currently active month
       const monthDeals = allDeals.filter(d => (d.month_key === currentMonth || (d.date && d.date.startsWith(currentMonth))));
@@ -2059,6 +2053,8 @@
     document.addEventListener("DOMContentLoaded", () => {
       lucide.createIcons();
       document.getElementById("txDate").value = new Date().toISOString().split("T")[0];
+      const curMonthDisplay = document.getElementById("currentMonthDisplay");
+      if (curMonthDisplay) curMonthDisplay.textContent = formatMonthHeading(currentMonth);
       renderSuggestions("expense");
       
       // Initialize dynamic custom tabs in sidebar
@@ -2133,7 +2129,7 @@
       document.getElementById("prevMonthBtn").addEventListener("click", () => {
         let [y, m] = currentMonth.split("-").map(Number);
         m -= 1; if (m === 0) { m = 12; y -= 1; }
-        currentMonth = `${y}-${String(m).padStart(2, '0')}`;
+        updateActiveMonth(`${y}-${String(m).padStart(2, '0')}`);
         if (currentTab === 'business') renderBusiness();
         else render();
       });
@@ -2141,7 +2137,7 @@
       document.getElementById("nextMonthBtn").addEventListener("click", () => {
         let [y, m] = currentMonth.split("-").map(Number);
         m += 1; if (m === 13) { m = 1; y += 1; }
-        currentMonth = `${y}-${String(m).padStart(2, '0')}`;
+        updateActiveMonth(`${y}-${String(m).padStart(2, '0')}`);
         if (currentTab === 'business') renderBusiness();
         else render();
       });
@@ -2249,7 +2245,7 @@
         saveDB(db);
         txModal.classList.add("hidden");
         showToast("Entry save ho gayi!");
-        currentMonth = entry.month_key;
+        updateActiveMonth(entry.month_key);
         render();
       });
 
@@ -2295,7 +2291,7 @@
           saveDB(db);
           editTxModal.classList.add("hidden");
           showToast("Entry update ho gayi!");
-          currentMonth = tx.month_key;
+          updateActiveMonth(tx.month_key);
           render();
         });
       }
@@ -2395,7 +2391,7 @@
               created_at: Date.now()
             };
             db.business_deals.push(newDeal);
-            currentMonth = newDeal.month_key;
+            updateActiveMonth(newDeal.month_key);
             showToast("Deal save ho gayi! 🎉");
           }
 
@@ -2663,6 +2659,43 @@
         settingsLogoutBtn.addEventListener("click", () => {
           setModal.classList.add("hidden");
           handleLogout();
+        });
+      }
+
+      const authGuestModeBtn = document.getElementById("authGuestModeBtn");
+      if (authGuestModeBtn) {
+        authGuestModeBtn.addEventListener("click", () => {
+          unlockApp();
+          showToast("Offline Mode! Bina login ke data save ho raha hai.");
+        });
+      }
+
+      const clearAllDataBtn = document.getElementById("clearAllDataBtn");
+      if (clearAllDataBtn) {
+        clearAllDataBtn.addEventListener("click", () => {
+          const confirm1 = confirm("⚠️ KYA AAP WAQAI SARA DATA DELETE KARNA CHAHTE HAIN?\n\nAapki tamam personal transactions, business deals, aur pending tasks mukammal tor par delete ho jayenge.");
+          if (!confirm1) return;
+          const confirm2 = prompt("Data delete karne ki tasdeeq ke liye 'DELETE' likhein:");
+          if (!confirm2 || confirm2.trim().toUpperCase() !== 'DELETE') {
+            alert("Delete cancel ho gaya.");
+            return;
+          }
+          const cleanDB = {
+            activeTab: 'personal',
+            months: {},
+            transactions: [],
+            business_deals: [],
+            pending_tasks: [],
+            customTabs: [],
+            updated_at: Date.now()
+          };
+          saveDB(cleanDB);
+          pushToCloud(false);
+          render();
+          if (currentTab === 'business') renderBusiness();
+          if (currentTab === 'pending') renderPending();
+          setModal.classList.add("hidden");
+          showToast("Sara data kamyabi se delete ho gaya! Clean slate ✅");
         });
       }
 
@@ -2940,9 +2973,11 @@
             return;
           }
 
-          // Restore cloud data to local if exists
+          // Merge cloud data with any local entries
           if (userData.data && typeof userData.data === 'object' && Object.keys(userData.data).length > 0) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(userData.data));
+            const localDB = getDB();
+            const merged = mergeDBs(localDB, userData.data);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
           }
 
           const session = {
@@ -3076,7 +3111,9 @@
 
           if (existing) {
             if (existing.data && typeof existing.data === 'object' && Object.keys(existing.data).length > 0) {
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(existing.data));
+              const localDB = getDB();
+              const merged = mergeDBs(localDB, existing.data);
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
             }
             const session = {
               email: existing.email || email,
@@ -3151,6 +3188,45 @@
         }
       }
 
+      function mergeDBs(localDB, cloudDB) {
+        if (!cloudDB || typeof cloudDB !== 'object') return localDB || getDB();
+        if (!localDB || typeof localDB !== 'object') return cloudDB;
+
+        // Merge transactions by unique ID
+        const txMap = new Map();
+        (cloudDB.transactions || []).forEach(t => { if (t && t.id) txMap.set(t.id, t); });
+        (localDB.transactions || []).forEach(t => { if (t && t.id) txMap.set(t.id, t); });
+        const mergedTransactions = Array.from(txMap.values());
+
+        // Merge business deals by unique ID
+        const dealMap = new Map();
+        (cloudDB.business_deals || []).forEach(d => { if (d && d.id) dealMap.set(d.id, d); });
+        (localDB.business_deals || []).forEach(d => { if (d && d.id) dealMap.set(d.id, d); });
+        const mergedDeals = Array.from(dealMap.values());
+
+        // Merge pending tasks by unique ID
+        const taskMap = new Map();
+        (cloudDB.pending_tasks || []).forEach(pt => { if (pt && pt.id) taskMap.set(pt.id, pt); });
+        (localDB.pending_tasks || []).forEach(pt => { if (pt && pt.id) taskMap.set(pt.id, pt); });
+        const mergedTasks = Array.from(taskMap.values());
+
+        // Merge custom tabs by ID
+        const tabMap = new Map();
+        (cloudDB.customTabs || []).forEach(tab => { if (tab && tab.id) tabMap.set(tab.id, tab); });
+        (localDB.customTabs || []).forEach(tab => { if (tab && tab.id) tabMap.set(tab.id, tab); });
+        const mergedTabs = Array.from(tabMap.values());
+
+        return {
+          activeTab: localDB.activeTab || cloudDB.activeTab || 'personal',
+          months: { ...(cloudDB.months || {}), ...(localDB.months || {}) },
+          transactions: mergedTransactions,
+          business_deals: mergedDeals,
+          pending_tasks: mergedTasks,
+          customTabs: mergedTabs,
+          updated_at: Math.max(Number(localDB.updated_at) || 0, Number(cloudDB.updated_at) || 0, Date.now())
+        };
+      }
+
       async function initAuthState() {
         const session = getAuthSession();
         if (session && session.email) {
@@ -3168,8 +3244,22 @@
               if (res.ok) {
                 const cloudData = await res.json();
                 if (cloudData && typeof cloudData === 'object' && Object.keys(cloudData).length > 0) {
-                  localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
+                  const localDB = getDB();
+                  const merged = mergeDBs(localDB, cloudData);
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+
+                  // If local had entries not yet in cloud, push merged back to cloud!
+                  const localTxLen = (localDB.transactions || []).length;
+                  const cloudTxLen = (cloudData.transactions || []).length;
+                  const localDealsLen = (localDB.business_deals || []).length;
+                  const cloudDealsLen = (cloudData.business_deals || []).length;
+                  if (localTxLen > cloudTxLen || localDealsLen > cloudDealsLen) {
+                    pushToCloud(true);
+                  }
+
                   render();
+                  if (currentTab === 'business') renderBusiness();
+                  if (currentTab === 'pending') renderPending();
                   updateCloudStatusUI('synced');
                 }
               }
@@ -3452,6 +3542,12 @@
 
       window.addEventListener('offline', () => {
         updateCloudStatusUI('offline');
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          pushToCloud(true);
+        }
       });
 
       // Init UI state
